@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl" class="h-full w-full overflow-hidden">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>خواردنگە و پیتزای شاهانە - POS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: { royal: { 500: '#85142b', 600: '#670018', 700: '#4a0010' } },
+      fontFamily: { sans: ['Vazirmatn', 'sans-serif'] }
+    }
+  }
+}
+</script>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
+html, body { height: 100vh; height: 100dvh; width: 100vw; margin: 0; padding: 0; overflow: hidden; font-family: 'Vazirmatn', sans-serif; user-select: none; -webkit-user-select: none; background-color: #16181d; perspective: 1800px; }
+@media (min-width: 768px) { html { font-size: 110%; } }
+.modal-scrollable { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: #d97706 #18181b; }
+.modal-scrollable::-webkit-scrollbar { display: block !important; width: 5px; }
+.modal-scrollable::-webkit-scrollbar-track { background: #18181b; border-radius: 4px; }
+.modal-scrollable::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
+.btn-press { transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s ease, box-shadow 0.3s ease; transform-style: preserve-3d; cursor: pointer; }
+.btn-press:active { transform: scale(0.95) translateZ(-10px) !important; filter: brightness(1.25) !important; }
+.vip-login-box { background: linear-gradient(145deg, rgba(18, 18, 24, 0.95) 0%, rgba(6, 6, 9, 0.98) 100%); border: 2px solid rgba(245, 158, 11, 0.4); box-shadow: 0 60px 120px -25px rgba(0, 0, 0, 0.98), 0 0 60px rgba(245, 158, 11, 0.15); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); }
+.clean-logo-container { position: relative; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%); border-radius: 1.5rem; padding: 4px; border: 1px solid rgba(245, 158, 11, 0.15); }
+.cart-item-anim { animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes slideInRight { 0% { opacity: 0; transform: translateX(50px); } 100% { opacity: 1; transform: translateX(0); } }
+.action-pop { animation: actionPopAnim 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes actionPopAnim { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.pulse-green { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); animation: pulse-green 2s infinite; }
+@keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+.pulse-yellow { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); animation: pulse-yellow 2s infinite; }
+@keyframes pulse-yellow { 0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); } 70% { box-shadow: 0 0 0 12px rgba(234, 179, 8, 0); } 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); } }
+@media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { display: block !important; position: absolute; left: 0; top: 0; width: 100%; } .no-print { display: none !important; } }
+</style>
+</head>
+<body class="text-zinc-100 flex flex-col h-[100dvh] w-screen overflow-hidden bg-[#16181d]">
+<div id="loginScreen" class="fixed inset-0 bg-black/95 backdrop-blur-3xl z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[650px] max-h-[650px] bg-gradient-to-tr from-amber-600/15 via-amber-500/25 to-transparent rounded-full blur-[150px] pointer-events-none"></div>
+  <div id="vipLoginCard" class="vip-login-box relative z-20 rounded-[3rem] w-full max-w-sm sm:max-w-md p-7 sm:p-9 flex flex-col items-center text-center my-auto">
+    <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-[2rem] bg-gradient-to-b from-zinc-900 via-black to-zinc-950 border-2 border-amber-500/60 flex items-center justify-center mb-5 p-3 relative group">
+      <img src="https://user50689.na.imgto.link/public/20261103/ccc3697cde6d05e1ff395dc4-7191.avif" alt="لۆگۆ" class="w-full h-full object-contain relative z-10">
+    </div>
+    <h1 class="text-lg sm:text-xl font-black text-amber-300 mb-5 tracking-tight drop-shadow">خواردنگە و پیتزای شاهانە</h1>
+    <div class="w-full space-y-3 text-right mb-5">
+      <label class="block text-[11px] text-amber-200/90 font-extrabold mb-1.5 flex items-center gap-2">
+        <i class="fa-solid fa-user-tie text-amber-400 text-xs"></i> جۆری بەکارهێنەر (ڕۆڵ هەڵبژێرە):
+      </label>
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" onclick="selectLoginRole('manager')" id="roleCardManager" class="btn-press p-2.5 rounded-2xl border-2 border-amber-500 bg-amber-500/20 text-amber-300 flex flex-col items-center justify-center gap-1 shadow-lg transition">
+          <i class="fa-solid fa-user-tie text-amber-400 text-sm"></i><span class="text-[10px] font-black truncate w-full text-center">بەڕێوبەر</span>
+        </button>
+        <button type="button" onclick="selectLoginRole('cashier')" id="roleCardCashier" class="btn-press p-2.5 rounded-2xl border-2 border-zinc-800 bg-black/60 text-zinc-400 flex flex-col items-center justify-center gap-1 shadow transition hover:border-amber-500/50">
+          <i class="fa-solid fa-cash-register text-zinc-400 text-sm"></i><span class="text-[10px] font-black truncate w-full text-center">کاشێر</span>
+        </button>
+        <button type="button" onclick="selectLoginRole('waiter')" id="roleCardWaiter" class="btn-press p-2.5 rounded-2xl border-2 border-zinc-800 bg-black/60 text-zinc-400 flex flex-col items-center justify-center gap-1 shadow transition hover:border-amber-500/50">
+          <i class="fa-solid fa-concierge-bell text-zinc-400 text-sm"></i><span class="text-[10px] font-black truncate w-full text-center">ناوساڵە</span>
+        </button>
+      </div>
+      <input type="hidden" id="loginRoleSelect" value="manager">
+    </div>
+    <div class="w-full space-y-4 text-right mb-6">
+      <div>
+        <label class="block text-[11px] text-amber-200/90 font-extrabold mb-1.5 flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-amber-400 text-xs"></i> وشەی تێپەڕ (پاسۆرد):
+        </label>
+        <input type="password" id="loginPasswordInput" placeholder="••••••••" class="w-full bg-black/90 border border-amber-500/40 rounded-2xl px-4 py-3.5 text-xs text-white focus:outline-none focus:border-amber-400 font-black shadow-inner">
+      </div>
+    </div>
+    <button type="button" onclick="handleLogin()" class="btn-press w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-400 text-zinc-950 py-3.5 rounded-2xl text-xs font-black shadow-[0_15px_35px_rgba(245,158,11,0.5)] flex items-center justify-center gap-2">
+      <i class="fa-solid fa-right-to-bracket text-xs"></i> <span>چوونەژوورەوە بۆ سیستەم</span>
+    </button>
+  </div>
+</div>
+
+<header class="relative w-full text-white shadow-2xl flex-none z-30 border-b-2 border-amber-500/30 overflow-hidden py-3 px-4 md:px-8 flex items-center justify-between gap-3">
+  <div class="absolute inset-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+    <iframe allow="fullscreen;autoplay" allowfullscreen height="1080" src="https://streamable.com/e/3b1mpb?autoplay=1&muted=1" width="1920" style="border:none; width: 100vw; height: 100vh; pointer-events: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.8);" class="object-cover filter brightness-[0.55] contrast-110"></iframe>
+    <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-zinc-950/70 via-black/30 to-zinc-950/70 backdrop-blur-[0.3px]"></div>
+  </div>
+  <div class="relative z-20 flex items-center gap-1.5 flex-wrap">
+    <div class="text-amber-400 w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center relative bg-black/60 border border-amber-500/30 shadow" title="پرێنتەر ئامادەیە">
+      <span id="printerStatusLed" class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-green z-10"></span>
+      <i class="fa-solid fa-print text-amber-400 text-xs"></i>
+    </div>
+  </div>
+  <div class="relative z-20 flex items-center gap-3.5 overflow-hidden justify-end">
+    <div class="flex flex-col justify-center items-end overflow-hidden min-w-0">
+      <h1 class="font-black text-sm sm:text-base md:text-lg tracking-tight text-amber-300 drop-shadow-md whitespace-nowrap overflow-hidden text-ellipsis">
+        خواردنگە و پیتزای شاهانە
+      </h1>
+      <div class="text-[10px] sm:text-xs text-amber-400/95 font-bold tracking-wide drop-shadow flex items-center gap-1.5 mt-1 flex-wrap justify-end">
+        <div id="currentUserBadge" class="bg-gradient-to-r from-amber-600/30 to-amber-500/25 border border-amber-400/60 text-amber-300 px-3 py-1 rounded-xl text-[10px] sm:text-[11px] font-black shadow-lg flex items-center gap-1.5 backdrop-blur-md">
+          <i class="fa-solid fa-crown text-amber-400 text-xs"></i> <span>بەڕێوبەر (وەستا سەلام)</span>
+        </div>
+        <span class="flex items-center gap-1.5 bg-black/70 backdrop-blur-md px-3 py-1 rounded-xl border border-zinc-800/80 shadow-inner text-zinc-300">
+          <i class="fa-solid fa-calendar-days text-amber-500/90 text-[10px]"></i>
+          <span id="headerLiveDate">٢٠٢٦/١١/٠٩</span>
+          <span class="text-zinc-600">|</span>
+          <i class="fa-regular fa-clock text-amber-500/90 text-[10px]"></i>
+          <span id="headerLiveTime">٠٧:٤١ ب.ن</span>
+        </span>
+      </div>
+    </div>
+    <div class="clean-logo-container flex-none">
+      <div id="restaurantLogoImg" class="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center drop-shadow-xl p-1">
+        <img src="https://user50689.na.imgto.link/public/20261103/ccc3697cde6d05e1ff395dc4-7191.avif" alt="لۆگۆ" class="w-full h-full object-contain">
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="bg-zinc-950 px-3 py-1.5 border-b-2 border-zinc-900 shadow-xl flex items-center justify-between flex-none z-20">
+  <div class="flex items-center gap-2 flex-wrap">
+    <button type="button" id="managerReportsBtn" onclick="openReportsModal()" class="btn-press bg-amber-500 hover:bg-amber-400 text-zinc-950 px-2.5 py-1 rounded-lg text-[10px] font-black flex items-center gap-1.5 shadow-md border border-amber-400 hidden">
+      <i class="fa-solid fa-chart-line text-zinc-950 text-[10px]"></i> <span>فرۆشی ڕۆژانە</span>
+    </button>
+    <button type="button" id="managerArchiveBtn" onclick="openTableArchiveModal()" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-amber-400 border border-amber-500/40 px-2.5 py-1 rounded-lg text-[10px] font-black flex items-center gap-1.5 shadow hidden">
+      <i class="fa-solid fa-box-archive text-[10px]"></i> <span>مێزە داخراوەکان</span>
+    </button>
+    <button type="button" id="managerPasswordsBtn" onclick="openPasswordsModal()" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-amber-400 border border-amber-500/40 px-2.5 py-1 rounded-lg text-[10px] font-black flex items-center gap-1.5 shadow hidden">
+      <i class="fa-solid fa-key text-[10px]"></i> <span>گۆڕینی پاسۆرد</span>
+    </button>
+  </div>
+  <div>
+    <button type="button" onclick="confirmLogout()" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-red-400 border border-red-900/60 px-2 py-0.5 rounded-lg text-[10px] font-black flex items-center gap-1 shadow">
+      <i class="fa-solid fa-right-from-bracket"></i> <span>دەرچوون</span>
+    </button>
+  </div>
+</div>
+
+<div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative w-full h-full bg-[#16181d]">
+  <div class="flex-1 flex flex-col h-full overflow-hidden border-l border-zinc-900 bg-[#16181d]">
+    <div class="bg-zinc-950 px-2.5 py-2 border-b border-zinc-900 shadow-lg flex-none">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-[11px] font-black text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
+          <i class="fa-solid fa-chair text-amber-500 text-xs"></i> <span>هەڵبژاردنی مێز</span>
+        </span>
+        <div class="flex items-center gap-2">
+          <button id="moveTableBtn" onclick="openMoveTableModal()" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-lg text-[10px] font-black items-center gap-1 transition shadow hidden">
+            <i class="fa-solid fa-right-left"></i> گۆڕینی مێز
+          </button>
+          <span class="text-[10px] font-extrabold text-amber-300 bg-zinc-900/90 px-2 py-0.5 rounded-lg border border-zinc-800 shadow-inner flex items-center gap-1">
+            مێز: <strong id="activeTableTitle" class="text-white font-black text-xs bg-amber-500/20 px-2 py-0.5 rounded text-amber-400">١</strong>
+          </span>
+        </div>
+      </div>
+      <div class="grid grid-cols-7 lg:grid-cols-[repeat(14,minmax(0,1fr))] gap-1.5 py-1" id="tablesContainer"></div>
+    </div>
+
+    <div class="h-2.5 sm:h-3.5 bg-[#16181d] flex-none"></div>
+
+    <div id="cashierEmbeddedCartSection" class="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 px-2.5 py-1.5 border-y-2 border-amber-500/40 shadow-xl flex-none hidden">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-1 bg-black/80 p-2 rounded-xl border border-amber-500/30 backdrop-blur-md">
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <div class="w-6 h-6 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-amber-400 shadow-inner flex-none">
+            <i class="fa-solid fa-receipt text-[11px]"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-black text-[11px] text-amber-300">سەبەتەی داواکارییە نێردراوەکان</span>
+              <span id="cashierCartTableBadge" class="bg-amber-500 text-zinc-950 font-black px-1.5 py-0.2 rounded text-[9px] shadow-md">مێزی ١</span>
+            </div>
+            <span class="text-[8px] text-zinc-400 font-bold leading-none block">وردەکاری فاکتەری نێردراو بۆ چێشتخانە</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end flex-wrap">
+          <div class="bg-zinc-950 border border-amber-500/40 px-2 py-0.5 rounded-lg flex items-center gap-2 text-[10px] shadow-inner">
+            <span class="text-zinc-400 font-bold">دانە: <strong id="cashierCartTotalItems" class="text-amber-300 font-black">٠</strong></span>
+            <div class="w-px h-2.5 bg-zinc-800"></div>
+            <span class="text-zinc-400 font-bold">نرخ: <strong id="cashierCartTotalPrice" class="text-amber-400 font-black text-[11px]">٠ دینار</strong></span>
+          </div>
+          <div class="flex items-center gap-1">
+            <button onclick="openCashierCartModal()" class="btn-press bg-amber-500 hover:bg-amber-400 text-zinc-950 px-3 py-1.5 rounded-xl text-xs font-black shadow flex items-center gap-1.5 border border-amber-400">
+              <i class="fa-solid fa-eye text-zinc-950 text-xs"></i> <span>پیشاندانی وردەکاری و وەسڵ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-2.5 sm:h-3.5 bg-[#16181d] flex-none"></div>
+
+    <div id="menuCategoriesSection" class="bg-zinc-950 p-1.5 md:p-2 border-b border-zinc-900 shadow-sm flex-none">
+      <div class="flex items-center justify-between mb-1 flex-wrap gap-1.5">
+        <span class="text-[10px] font-black text-zinc-300 uppercase tracking-wide flex items-center gap-1">
+          <i class="fa-solid fa-utensils text-amber-500 text-[10px]"></i> <span>بەشەکانی مینو:</span>
+        </span>
+        <div id="adminMenuControls" class="flex items-center gap-1.5 hidden">
+          <button onclick="openAddFoodModal()" class="btn-press bg-amber-500 hover:bg-amber-400 text-zinc-950 px-2 py-0.5 rounded-lg text-[9px] font-black flex items-center gap-1 shadow border border-amber-400/50">
+            <i class="fa-solid fa-plus text-[8px]"></i> <span>زیادکردنی خواردن</span>
+          </button>
+          <button onclick="openEditFoodModal()" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-lg text-[9px] font-black flex items-center gap-1 shadow">
+            <i class="fa-solid fa-pen-to-square text-[8px]"></i> <span>دەستکاری / سڕینەوە</span>
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-4 sm:grid-cols-8 gap-1 max-w-5xl mx-auto px-0.5" id="categoriesContainer"></div>
+    </div>
+
+    <div id="menuSectionWrapper" class="flex-1 p-2 bg-[#16181d] overflow-hidden flex flex-col pb-16 lg:pb-2">
+      <div id="menuItemsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 w-full h-full content-start overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <div id="cartViewPanel" class="w-full lg:w-[380px] xl:w-[420px] bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 flex flex-col h-full shadow-[0_0_30px_rgba(217,119,6,0.15)] z-40 flex-none border-t lg:border-t-0 lg:border-r-2 border-amber-500/30 absolute lg:relative inset-0 transform translate-y-full lg:translate-y-0 transition-transform duration-300">
+    <div class="p-3 bg-black/90 text-white flex items-center justify-between flex-none shadow-lg border-b border-zinc-800 backdrop-blur-md">
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="toggleMobileCart(false)" class="lg:hidden text-amber-400 text-xs px-2 py-1 flex items-center gap-1 font-bold btn-press bg-zinc-900 rounded-lg">
+          <i class="fa-solid fa-arrow-right"></i> گەڕانەوە
+        </button>
+        <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+          <i class="fa-solid fa-receipt text-xs"></i>
+        </div>
+        <div>
+          <span class="font-black text-xs text-amber-300 block">لیستی داواکاری سەبەتە</span>
+        </div>
+        <span id="cartTableBadge" class="bg-amber-500 text-zinc-950 font-black px-2.5 py-0.5 rounded-lg text-[11px] shadow ml-1">مێزی ١</span>
+        <span id="cartHeaderSyncBadge" class="text-[10px] font-black px-2 py-0.5 rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-800 flex items-center gap-1 hidden">
+          <i id="cartHeaderSyncIcon" class="fa-solid"></i>
+          <span id="cartHeaderSyncText"></span>
+        </span>
+      </div>
+      <button id="clearCartBtn" onclick="confirmClearCurrentCart()" class="btn-press text-[10px] text-red-400 hover:text-white bg-red-950/60 border border-red-900/60 px-2.5 py-1 rounded-xl transition font-black flex items-center gap-1 shadow">
+        <i class="fa-solid fa-trash-can"></i> <span>بەتاڵکردنەوە</span>
+      </button>
+    </div>
+
+    <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-3 space-y-2 divide-y divide-zinc-900/80 bg-zinc-950/60 pb-36 lg:pb-4"></div>
+
+    <div class="p-3.5 bg-black/95 border-t border-zinc-800 space-y-2.5 flex-none shadow-[0_-10px_20px_rgba(0,0,0,0.8)] mb-16 lg:mb-0 backdrop-blur-md">
+      <div class="flex justify-between items-center text-zinc-300 text-xs font-extrabold bg-zinc-900/80 px-3 py-2 rounded-xl border border-zinc-800">
+        <span>کۆی گشتی ژمارەی خواردنەکان:</span>
+        <span id="cartTotalItems" class="text-amber-300 font-black text-xs bg-black px-2 py-0.5 rounded border border-zinc-800">٠</span>
+      </div>
+      <div id="priceSummarySection" class="flex justify-between items-center border border-amber-500/40 bg-gradient-to-r from-amber-950/30 to-zinc-900 px-3.5 py-2.5 rounded-xl text-sm font-black text-white shadow-lg">
+        <span class="text-xs text-amber-200 font-black">کۆی گشتی پارە:</span>
+        <span id="cartTotalPrice" class="text-amber-400 text-base font-black drop-shadow">٠ دینار</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-0.5">
+        <button id="kitchenPrintBtn" onclick="handlePrint('kitchen')" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 px-2.5 rounded-xl text-xs font-black shadow-md flex items-center justify-center gap-1.5 border border-zinc-700">
+          <i class="fa-solid fa-kitchen-set text-amber-400 text-sm"></i> <span>وەسڵی چێشتخانە</span>
+        </button>
+        <button id="customerPrintBtn" onclick="handlePrint('customer')" class="btn-press bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-2.5 rounded-xl text-xs font-black shadow-lg flex items-center justify-center gap-1.5 border border-emerald-500">
+          <i class="fa-solid fa-file-invoice-dollar text-emerald-100 text-sm"></i> <span>وەسڵی موشتەری</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="mobileCartBar" onclick="toggleMobileCart(true)" class="lg:hidden fixed bottom-2 left-2 bg-zinc-950 text-white py-2 px-3.5 rounded-2xl shadow-2xl z-50 border border-zinc-800 flex items-center gap-3 cursor-pointer btn-press max-w-[75%] hidden">
+  <div class="w-8 h-8 bg-amber-500 text-zinc-950 font-black rounded-xl flex items-center justify-center text-xs shadow-md flex-none">
+    <i class="fa-solid fa-cart-shopping"></i>
+  </div>
+  <div class="flex flex-col text-right min-w-0">
+    <div class="text-[11px] font-black text-amber-300 truncate leading-tight" id="mobileCartSummaryText">مێزی ١ - چۆڵە</div>
+    <div class="text-[11px] font-black text-amber-400 truncate leading-tight mt-0.5" id="mobileCartSummaryPrice">٠ دینار</div>
+  </div>
+</div>
+
+<div id="reportsModal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 hidden flex items-center justify-center p-3 sm:p-5">
+  <div class="bg-gradient-to-b from-zinc-950 via-zinc-900 to-black border-2 border-amber-500/50 rounded-3xl w-full max-w-3xl p-5 sm:p-7 shadow-[0_0_80px_rgba(217,119,6,0.3)] flex flex-col max-h-[88vh] relative overflow-hidden">
+    <div class="flex items-center justify-between pb-3.5 border-b border-amber-500/30 mb-4 flex-none no-print relative z-10">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-amber-300 flex items-center justify-center text-zinc-950 shadow-lg font-black text-xl">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div>
+          <h3 class="text-sm sm:text-lg font-black text-amber-300 tracking-wide">ڕاپۆرت و فرۆشی ڕۆژانەی داهات</h3>
+          <p class="text-[11px] text-zinc-400 font-extrabold mt-0.5">پۆلێنکردنی وردی داهاتی فرۆش بەپێی بەشەکانی مینو</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeReportsModal()" class="btn-press w-9 h-9 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center border border-zinc-800"><i class="fa-solid fa-xmark text-base"></i></button>
+    </div>
+    <div class="modal-scrollable flex-1 space-y-4 pr-1.5 relative z-10">
+      <div class="bg-gradient-to-r from-amber-950/50 via-zinc-900 to-zinc-950 border border-amber-500/40 p-4 sm:p-5 rounded-2xl flex items-center justify-between shadow-xl">
+        <div class="space-y-1.5 relative z-10">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 pulse-green"></span>
+            <span class="text-[11px] text-amber-200 font-black uppercase tracking-wider">کۆی گشتی داهاتی تۆمارکراو (فرۆشی ئەمڕۆ)</span>
+          </div>
+          <span id="totalRevenueText" class="text-amber-400 font-black text-2xl sm:text-4xl drop-shadow tracking-tight block">٠ دینار</span>
+        </div>
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 flex-none">
+          <i class="fa-solid fa-wallet text-2xl sm:text-3xl"></i>
+        </div>
+      </div>
+      <div class="bg-black/80 border border-zinc-800 rounded-2xl p-4 shadow-xl">
+        <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-zinc-800/80">
+          <h4 class="font-black text-xs sm:text-sm text-zinc-200 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-layer-group text-amber-500 text-sm"></i> وردەکاری فرۆش بەپێی بەشەکان
+          </h4>
+          <span class="text-[10px] text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/30 font-extrabold">لیستی پۆلێنکراو</span>
+        </div>
+        <div id="categorizedSalesStatsList" class="space-y-3"></div>
+      </div>
+    </div>
+    <div class="pt-4 border-t border-amber-500/30 mt-3 flex-none no-print relative z-10">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button onclick="resetSalesReports()" class="btn-press bg-red-950 hover:bg-red-900 text-red-200 border border-red-800 py-3 px-4 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-lg">
+          <i class="fa-solid fa-trash-can text-sm"></i> <span>سڕینەوەی هەمووی</span>
+        </button>
+        <button onclick="printReport()" class="btn-press bg-gradient-to-r from-amber-600 via-amber-500 to-amber-400 text-zinc-950 py-3 px-4 rounded-xl text-xs font-black shadow-lg flex items-center justify-center gap-2 border border-amber-300">
+          <i class="fa-solid fa-print text-sm"></i> <span>چاپکردنی ڕاپۆرت لە پرێنتەر</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tableArchiveModal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 hidden flex items-center justify-center p-3 sm:p-5">
+  <div class="bg-gradient-to-b from-zinc-950 via-zinc-900 to-black border-2 border-amber-500/50 rounded-3xl w-full max-w-4xl p-5 sm:p-7 shadow-2xl flex flex-col max-h-[88vh]">
+    <div class="flex items-center justify-between pb-3.5 border-b border-amber-500/30 mb-4 flex-none no-print">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-amber-500 flex items-center justify-center text-zinc-950 font-black text-xl">
+          <i class="fa-solid fa-box-archive"></i>
+        </div>
+        <h3 class="text-sm sm:text-lg font-black text-amber-300 tracking-wide">مێزە داخراوەکان</h3>
+      </div>
+      <button type="button" onclick="closeTableArchiveModal()" class="btn-press w-9 h-9 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 flex items-center justify-center border border-zinc-800"><i class="fa-solid fa-xmark text-base"></i></button>
+    </div>
+    <div class="modal-scrollable flex-1 space-y-3 pr-1.5" id="tableArchiveListContainer"></div>
+    <div class="pt-4 border-t border-amber-500/30 mt-3 flex-none no-print flex justify-end">
+      <button onclick="confirmClearArchive()" class="btn-press bg-red-950 hover:bg-red-900 text-red-200 border border-red-800 py-2.5 px-5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg">
+        <i class="fa-solid fa-trash-can text-sm"></i> <span>سڕینەوەی هەموو مێژووی مێزەکان</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="cashierCartModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-zinc-950 border border-amber-500/30 rounded-3xl w-full max-w-xl p-4 shadow-2xl flex flex-col max-h-[90vh]">
+    <div class="flex items-center justify-between pb-3 border-b border-zinc-900 mb-3 flex-none">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400"><i class="fa-solid fa-receipt text-sm"></i></div>
+        <div>
+          <h3 class="text-xs sm:text-sm font-black text-amber-300">سەبەتەی داواکارییە نێردراوەکانی مێز</h3>
+          <p class="text-[11px] text-amber-400 font-extrabold" id="cashierModalSubTitle">مێزی ١</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeCashierCartModal()" class="btn-press w-8 h-8 rounded-xl bg-zinc-900 text-zinc-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark text-base"></i></button>
+    </div>
+    <div class="modal-scrollable flex-1 space-y-2 pr-1 divide-y divide-zinc-900/80 bg-black/40 p-3 rounded-2xl border border-zinc-900" id="cashierModalItemsContainer"></div>
+    <div class="pt-3 border-t border-zinc-900 mt-3 flex flex-col gap-2.5 flex-none">
+      <div class="flex justify-between items-center bg-amber-950/20 border border-amber-500/30 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-black text-white">
+        <span class="text-xs text-amber-200">کۆی گشتی پارەی نێردراو:</span>
+        <span id="cashierModalTotalPrice" class="text-amber-400 text-base font-black">٠ دینار</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="closeCashierCartModal()" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-zinc-300 py-2.5 rounded-xl text-xs font-bold">داخستن</button>
+        <button id="cashierModalPrintAndClearBtn" onclick="cashierPrintAndClearTable()" class="btn-press bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-2 rounded-xl text-xs font-black shadow flex items-center justify-center gap-1.5 border border-emerald-500 hidden">
+          <i class="fa-solid fa-print text-emerald-100 text-xs"></i> <span>چاپکردن و بەتاڵکردنەوەی مێز</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="addFoodModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3">
+  <div id="addFoodModalBox" class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between pb-2 border-b border-zinc-900 mb-2">
+      <h3 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-amber-500"></i> زیادکردنی خواردنی نوێ</h3>
+      <button onclick="closeAddFoodModal()" class="text-zinc-400 hover:text-white text-xs btn-press w-7 h-7 bg-zinc-900 rounded-xl flex items-center justify-center"><i class="fa-solid fa-xmark text-base"></i></button>
+    </div>
+    <div class="space-y-2 mb-3">
+      <div>
+        <label class="block text-[10px] text-zinc-400 font-bold mb-1">ناوی خواردن:</label>
+        <input type="text" id="newFoodNameInput" class="w-full bg-black border border-zinc-800 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 font-bold">
+      </div>
+      <div>
+        <label class="block text-[10px] text-zinc-400 font-bold mb-1">نرخ:</label>
+        <input type="number" id="newFoodPriceInput" class="w-full bg-black border border-zinc-800 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 font-bold">
+      </div>
+      <div>
+        <label class="block text-[10px] text-zinc-400 font-bold mb-1">بەش:</label>
+        <select id="newFoodCategorySelect" onchange="onAddFoodCategoryChange()" class="w-full bg-black border border-zinc-800 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 font-bold"></select>
+      </div>
+      <div id="newFoodOptionsWrapper" class="flex items-center gap-2 pt-1 hidden">
+        <input type="checkbox" id="newFoodHasOptionsCheck" class="w-4 h-4 accent-amber-500 rounded bg-black border-zinc-800">
+        <label for="newFoodHasOptionsCheck" class="text-[11px] text-amber-300 font-bold cursor-pointer">هەڵبژاردەی (سنگ و قیمە)ی هەبێت؟</label>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="addNewFoodToMenu()" class="btn-press flex-1 bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-black py-2 rounded-xl shadow">تۆمارکردن</button>
+      <button onclick="closeAddFoodModal()" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-bold px-3 py-2 rounded-xl">پەشیمانبوونەوە</button>
+    </div>
+  </div>
+</div>
+
+<div id="editFoodModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3">
+  <div id="editFoodModalBox" class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-2xl p-4 shadow-2xl flex flex-col max-h-[85vh]">
+    <div class="flex items-center justify-between pb-2 border-b border-zinc-900 mb-3 flex-none">
+      <h3 class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5"><i class="fa-solid fa-pen-to-square text-amber-500"></i> دەستکاریکردن و سڕینەوەی خواردنەکان</h3>
+      <button onclick="closeEditFoodModal()" class="text-zinc-400 hover:text-white text-xs btn-press w-7 h-7 bg-zinc-900 rounded-xl flex items-center justify-center"><i class="fa-solid fa-xmark text-base"></i></button>
+    </div>
+    <div class="grid grid-cols-4 sm:grid-cols-8 gap-1 mb-3 flex-none" id="modalCategoryTabsContainer"></div>
+    <div class="modal-scrollable flex flex-col gap-2 bg-black/60 p-3 rounded-xl border border-zinc-900 flex-1" id="modalCategoryItemsList"></div>
+    <div class="flex justify-end pt-3 border-t border-zinc-900 mt-3 flex-none">
+      <button onclick="closeEditFoodModal()" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-bold px-6 py-2 rounded-xl">داخستن</button>
+    </div>
+  </div>
+</div>
+
+<div id="passwordsModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-sm p-5 shadow-2xl flex flex-col">
+    <div class="flex items-center justify-between pb-3 border-b border-zinc-900 mb-3">
+      <h3 class="text-sm font-black text-amber-300"><i class="fa-solid fa-key"></i> گۆڕینی پاسۆردی بەکارهێنەران</h3>
+      <button type="button" onclick="closePasswordsModal()" class="text-zinc-400"><i class="fa-solid fa-xmark text-lg"></i></button>
+    </div>
+    <div class="space-y-3 text-xs">
+      <div>
+        <label class="block text-zinc-400 font-bold mb-1">پاسۆردی بەڕێوبەر (وەستا سەلام):</label>
+        <input type="text" id="passManagerInput" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-bold">
+      </div>
+      <div>
+        <label class="block text-zinc-400 font-bold mb-1">پاسۆردی کاشێر:</label>
+        <input type="text" id="passCashierInput" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-bold">
+      </div>
+      <div>
+        <label class="block text-zinc-400 font-bold mb-1">پاسۆردی ناوساڵە:</label>
+        <input type="text" id="passWaiterInput" class="w-full bg-black border border-zinc-800 rounded-xl px-3 py-2 text-white font-bold">
+      </div>
+      <button type="button" onclick="promptSaveNewPasswords()" class="w-full bg-amber-500 text-black py-2.5 rounded-xl font-black mt-2">تۆمارکردنی پاسۆردە نوێکان</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+  <div class="bg-zinc-950 border border-amber-500/30 rounded-3xl w-full max-w-sm p-5 shadow-2xl flex flex-col text-center">
+    <div id="confirmModalIconWrapper" class="w-12 h-12 rounded-full bg-red-950/80 border border-red-800 flex items-center justify-center mx-auto mb-3 text-red-400 text-xl"><i id="confirmModalIcon" class="fa-solid fa-triangle-exclamation"></i></div>
+    <h3 id="confirmModalTitle" class="text-sm font-black text-white mb-1">دڵنیایت لە ئەنجامدانی ئەم کارە؟</h3>
+    <p id="confirmModalText" class="text-xs text-zinc-400 font-bold mb-4">ئایا دەتەوێت ئەم گۆڕانکارییە پاشەکەوت بکەیت؟</p>
+    <div class="grid grid-cols-2 gap-2">
+      <button id="confirmYesBtn" class="btn-press bg-amber-500 hover:bg-amber-400 text-zinc-950 py-2 rounded-xl text-xs font-black shadow">بەڵێ</button>
+      <button id="confirmNoBtn" onclick="closeConfirmModal()" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-zinc-300 py-2 rounded-xl text-xs font-bold">نەخێر</button>
+    </div>
+  </div>
+</div>
+
+<div id="moveTableModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-sm p-4 shadow-2xl">
+    <div class="flex items-center justify-between pb-3 border-b border-zinc-900 mb-3">
+      <h3 class="text-sm font-black text-amber-300 flex items-center gap-1.5"><i class="fa-solid fa-right-left text-amber-500"></i> گواستنەوەی داواکاریی مێز</h3>
+      <button onclick="closeMoveTableModal()" class="text-zinc-400 hover:text-white text-xs"><i class="fa-solid fa-xmark text-base"></i></button>
+    </div>
+    <p class="text-[11px] text-zinc-300 font-bold mb-3">دەتەوێت داواکارییەکانی <strong class="text-amber-400 text-sm font-black">مێزی <span id="modalSourceTableNum">١</span></strong> بگوازیتەوە بۆ مێزی کامە؟</p>
+    <div class="grid grid-cols-4 gap-2 mb-4" id="modalTargetTablesGrid"></div>
+    <div class="flex justify-end">
+      <button onclick="closeMoveTableModal()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-bold px-4 py-2 rounded-xl">پەشیمانبوونەوە</button>
+    </div>
+  </div>
+</div>
+
+<div class="hidden"><canvas id="thermalCanvas" width="576" height="600"></canvas></div>
+<div id="printArea" class="hidden"><img id="printableImage" src="" style="width: 100%; max-width: 80mm; display: block; margin: 0 auto;"></div>
+
+<div id="toast" class="fixed bottom-24 left-4 bg-zinc-900 text-white px-3.5 py-2.5 rounded-2xl shadow-2xl z-[200] transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2.5 border border-zinc-800 pointer-events-none">
+  <i id="toastIcon" class="fa-solid fa-circle-info text-amber-400 text-sm"></i>
+  <span id="toastMessage" class="text-[11px] font-extrabold">پەیام</span>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCnb0vGenj06WYsjaXl_3l7oJCzkdz-LPY",
+  authDomain: "shahana00.firebaseapp.com",
+  projectId: "shahana00",
+  storageBucket: "shahana00.firebasestorage.app",
+  messagingSenderId: "96293411994",
+  appId: "1:96293411994:web:4484c40a9a148ed3d31323",
+  measurementId: "G-MTSCHB38F2"
+};
+
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let PASSWORDS = { manager: "1234", cashier: "5678", waiter: "0000" };
+let currentUserRole = null;
+let salesData = { totalRevenue: 0, foodCounts: {} };
+let tableArchive = [];
+
+const categories = [
+  { id: 'pizza', name: 'پیتزا', emoji: '🍕' },
+  { id: 'gas', name: 'گەص و شاورمە', emoji: '🌯' },
+  { id: 'burger', name: 'سورکراوە', emoji: '🍔' },
+  { id: 'appetizer', name: 'موقەبیلات', emoji: '🥗' },
+  { id: 'kulerah', name: 'کولێرەکان', emoji: '🫓' },
+  { id: 'barjaw', name: 'برژاو', emoji: '🥩' },
+  { id: 'kulaw', name: 'کوڵاوەکان', emoji: '🍲' },
+  { id: 'drinks', name: 'خواردنەوەکان', emoji: '🥤' }
+];
+
+const defaultMenu = [
+  { id: 'p1', cat: 'pizza', name: 'پیتزای بچوک', price: 3000, hasOptions: true },
+  { id: 'p2', cat: 'pizza', name: 'پیتزای وەسەت', price: 4000, hasOptions: true },
+  { id: 'p3', cat: 'pizza', name: 'پیتزای گەورە', price: 5000, hasOptions: true },
+  { id: 'p4', cat: 'pizza', name: 'پیتزای ٧ هەزاری', price: 7000, hasOptions: true },
+  { id: 'p5', cat: 'pizza', name: 'پیتزای داخراو', price: 4000, hasOptions: true },
+  { id: 'p6', cat: 'pizza', name: 'پیتزای مارگریتا', price: 3500 },
+  { id: 'p7', cat: 'pizza', name: 'پیتزای پێپەڕۆنی', price: 4000 },
+  { id: 'p8', cat: 'pizza', name: 'پیتزای ١٠ هەزاری', price: 10000, hasOptions: true },
+  { id: 'p9', cat: 'pizza', name: 'پیتزای ١٣ هەزاری', price: 13000, hasOptions: true },
+  { id: 'p10', cat: 'pizza', name: 'پیتزای ١٥ هەزاری', price: 15000, hasOptions: true },
+  { id: 'g1', cat: 'gas', name: 'گەص مریشک', price: 1250 },
+  { id: 'g2', cat: 'gas', name: 'ماعون مریشک', price: 4000 },
+  { id: 'g3', cat: 'gas', name: 'گەص حەیوان', price: 2000 },
+  { id: 'g4', cat: 'gas', name: 'ماعون حەیوان', price: 6000 },
+  { id: 'g5', cat: 'gas', name: 'شاورمەی مریشک', price: 1500 },
+  { id: 'g6', cat: 'gas', name: 'شاورمەی حەیوان', price: 2500 },
+  { id: 'b1', cat: 'burger', name: 'بەرگر حەیوان (خۆماڵی)', price: 3000 },
+  { id: 'b2', cat: 'burger', name: 'دەبڵ بەرگر (خۆماڵی)', price: 6000 },
+  { id: 'b3', cat: 'burger', name: 'چیز بەرگر (خۆماڵی)', price: 3500 },
+  { id: 'b4', cat: 'burger', name: 'بەرگر حەیوان', price: 2000 },
+  { id: 'b5', cat: 'burger', name: 'دەبڵ بەرگر حەیوان', price: 4000 },
+  { id: 'b6', cat: 'burger', name: 'چیز بەرگر حەیوان', price: 2500 },
+  { id: 'b7', cat: 'burger', name: 'بەرگر مریشک', price: 2000 },
+  { id: 'b8', cat: 'burger', name: 'چیز بەرگر مریشک', price: 2500 },
+  { id: 'b9', cat: 'burger', name: 'پەتاتە', price: 2000 },
+  { id: 'b10', cat: 'burger', name: 'کنتاکی + فینگەر', price: 5500 },
+  { id: 'm1', cat: 'appetizer', name: 'موقەبیلات بچووک', price: 2500 },
+  { id: 'm2', cat: 'appetizer', name: 'موقەبیلات وەسەت', price: 3500 },
+  { id: 'm3', cat: 'appetizer', name: 'موقەبیلات گەورە', price: 5000 },
+  { id: 'k1', cat: 'kulerah', name: 'کولێرە بەقیمە', price: 1250 },
+  { id: 'k2', cat: 'kulerah', name: 'کولێرە بەقیمەی دەبڵ', price: 2000 },
+  { id: 'k3', cat: 'kulerah', name: 'کولێرە بەسنگ', price: 1500 },
+  { id: 'k4', cat: 'kulerah', name: 'کولێرە بەپەنیر', price: 1500 },
+  { id: 'k5', cat: 'kulerah', name: 'کولێرە بەقیمە و پەنیر', price: 2000 },
+  { id: 'k6', cat: 'kulerah', name: 'کولێرە بەسنگ و پەنیر', price: 2000 },
+  { id: 'k7', cat: 'kulerah', name: 'کولێرە بەقیمە و سنگ', price: 2000 },
+  { id: 'k8', cat: 'kulerah', name: 'کولێرەی موشەکەل', price: 2500 },
+  { id: 'k9', cat: 'kulerah', name: 'کولێرە داخراو (سنگ+پەنیر)', price: 2500 },
+  { id: 'k10', cat: 'kulerah', name: 'کولێرە داخراو (قیمە+پەنیر)', price: 3000 },
+  { id: 'bj1', cat: 'barjaw', name: 'کەباب', price: 3500 },
+  { id: 'bj2', cat: 'barjaw', name: 'تکەی گۆشت', price: 3500 },
+  { id: 'bj3', cat: 'barjaw', name: 'تکەی مریشک', price: 3500 },
+  { id: 'bj4', cat: 'barjaw', name: 'جگەر', price: 3500 },
+  { id: 'kl1', cat: 'kulaw', name: 'سادە', price: 2500 },
+  { id: 'kl2', cat: 'kulaw', name: 'سادە + مریشک', price: 4000 },
+  { id: 'kl3', cat: 'kulaw', name: 'سادە + ماعون مریشک', price: 6000 },
+  { id: 'kl4', cat: 'kulaw', name: 'سادە + ماعون حەیوان', price: 8000 },
+  { id: 'kl5', cat: 'kulaw', name: 'کەباب لەسەر برنج', price: 6000 },
+  { id: 'd1', cat: 'drinks', name: 'بیپسی فریش', price: 1000 },
+  { id: 'd2', cat: 'drinks', name: 'چای', price: 250 },
+  { id: 'd3', cat: 'drinks', name: 'بیپسی', price: 500 },
+  { id: 'd4', cat: 'drinks', name: 'بیپسی وەسەت', price: 750 },
+  { id: 'd5', cat: 'drinks', name: 'بیپسی گەورە', price: 1500 },
+  { id: 'd6', cat: 'drinks', name: 'دیۆ', price: 500 },
+  { id: 'd7', cat: 'drinks', name: 'میرندا', price: 500 },
+  { id: 'd8', cat: 'drinks', name: 'دۆی خۆماڵی', price: 750 },
+  { id: 'd9', cat: 'drinks', name: 'ماستاو', price: 500 },
+  { id: 'd10', cat: 'drinks', name: 'ئاو', price: 250 },
+  { id: 'd11', cat: 'drinks', name: 'دۆی گەورە - قەندیل', price: 1500 },
+  { id: 'd12', cat: 'drinks', name: 'سێڤنی گەورە', price: 1500 },
+  { id: 'd13', cat: 'drinks', name: 'دیۆی گەورە', price: 1500 }
+];
+
+let fullMenu = defaultMenu;
+let currentSelectedTable = 1;
+let currentSelectedCat = 'pizza';
+let modalSelectedCat = 'pizza';
+let tableCartStore = {};
+let tablePrintStatus = {};
+let tableLastPrintedSnapshot = {};
+let tableOrderIds = {};
+
+for (let i = 1; i <= 14; i++) {
+  if (!tableCartStore[i]) tableCartStore[i] = [];
+  if (tablePrintStatus[i] === undefined) tablePrintStatus[i] = true;
+  if (!tableLastPrintedSnapshot[i]) tableLastPrintedSnapshot[i] = JSON.stringify(tableCartStore[i]);
+  if (!tableOrderIds[i]) tableOrderIds[i] = null;
+}
+
+let isSyncingFromServer = false;
+let printLockTimer = null;
+let isSendingPrintJob = false;
+
+function saveDataToFirebase() {
+  if (isSyncingFromServer) return;
+  const payload = {
+    tableCartStore: tableCartStore,
+    tableLastPrintedSnapshot: tableLastPrintedSnapshot,
+    tableOrderIds: tableOrderIds,
+    salesData: salesData,
+    tableArchive: tableArchive,
+    passwords: PASSWORDS,
+    menu: fullMenu,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  db.collection("pos_data").doc("shahan_store").set(payload, { merge: true }).catch(err => console.error(err));
+}
+
+function initRealtimeSync() {
+  db.collection("pos_data").doc("shahan_store").onSnapshot((doc) => {
+    if (printLockTimer) return;
+    if (doc.exists) {
+      isSyncingFromServer = true;
+      const data = doc.data();
+      if (data.tableCartStore) tableCartStore = data.tableCartStore;
+      if (data.tableLastPrintedSnapshot) tableLastPrintedSnapshot = data.tableLastPrintedSnapshot;
+      if (data.tableOrderIds) tableOrderIds = data.tableOrderIds;
+      if (data.salesData) salesData = data.salesData;
+      if (data.tableArchive) tableArchive = data.tableArchive;
+      if (data.passwords) PASSWORDS = data.passwords;
+      if (data.menu && Array.isArray(data.menu) && data.menu.length > 0) fullMenu = data.menu;
+      renderTables();
+      renderCart();
+      renderCashierEmbeddedCart();
+      renderMenu();
+      setTimeout(() => { isSyncingFromServer = false; }, 300);
+    }
+  });
+}
+
+function selectLoginRole(role) {
+  document.getElementById('loginRoleSelect').value = role;
+  const btnManager = document.getElementById('roleCardManager');
+  const btnCashier = document.getElementById('roleCardCashier');
+  const btnWaiter = document.getElementById('roleCardWaiter');
+  [btnManager, btnCashier, btnWaiter].forEach(btn => {
+    btn.className = "btn-press p-2.5 rounded-2xl border-2 border-zinc-800 bg-black/60 text-zinc-400 flex flex-col items-center justify-center gap-1 shadow transition hover:border-amber-500/50";
+  });
+  const activeBtn = document.getElementById('roleCard' + role.charAt(0).toUpperCase() + role.slice(1));
+  if(activeBtn) activeBtn.className = "btn-press p-2.5 rounded-2xl border-2 border-amber-500 bg-amber-500/20 text-amber-300 flex flex-col items-center justify-center gap-1 shadow-lg transition";
+}
+
+function handleLogin() {
+  const role = document.getElementById('loginRoleSelect').value;
+  const pass = document.getElementById('loginPasswordInput').value.trim();
+  const isManagerWithDefault = (role === 'manager' && pass === "shahana123");
+  if (isManagerWithDefault || pass === String(PASSWORDS[role])) {
+    currentUserRole = role;
+    localStorage.setItem('shahan_current_role', role);
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('loginPasswordInput').value = '';
+    applyRolePermissions();
+    showToast('بە سەرکەوتوویی چوویتە ژوورەوە', 'success');
+  } else {
+    showToast('وشەی تێپەڕ هەڵەیە!', 'error');
+    document.getElementById('loginPasswordInput').value = '';
+    document.getElementById('loginPasswordInput').focus();
+  }
+}
+
+function confirmLogout() {
+  showConfirmModal('ئایا دڵنیایت لە دەرچوون لە سیستەم؟', () => { executeLogout(); }, 'دەرچوون لە سیستەم', 'fa-solid fa-right-from-bracket', 'bg-red-600 hover:bg-red-500 text-white', 'بەڵێ', 'نەخێر');
+}
+
+function executeLogout() {
+  currentUserRole = null;
+  localStorage.removeItem('shahan_current_role');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('loginPasswordInput').value = '';
+  const mobileCartBar = document.getElementById('mobileCartBar');
+  if(mobileCartBar) mobileCartBar.classList.add('hidden');
+  showToast('بە سەرکەوتوویی دەرچوویت', 'info');
+}
+
+function applyRolePermissions() {
+  const badge = document.getElementById('currentUserBadge');
+  const reportsBtn = document.getElementById('managerReportsBtn');
+  const managerArchiveBtn = document.getElementById('managerArchiveBtn');
+  const passwordsBtn = document.getElementById('managerPasswordsBtn');
+  const kitchenPrintBtn = document.getElementById('kitchenPrintBtn');
+  const customerPrintBtn = document.getElementById('customerPrintBtn');
+  const cashierModalPrintAndClearBtn = document.getElementById('cashierModalPrintAndClearBtn');
+  const adminMenuControls = document.getElementById('adminMenuControls');
+  const menuCategoriesSection = document.getElementById('menuCategoriesSection');
+  const menuSectionWrapper = document.getElementById('menuSectionWrapper');
+  const cartViewPanel = document.getElementById('cartViewPanel');
+  const mobileCartBar = document.getElementById('mobileCartBar');
+  const cashierEmbeddedCartSection = document.getElementById('cashierEmbeddedCartSection');
+  const moveTableBtn = document.getElementById('moveTableBtn');
+  const clearCartBtn = document.getElementById('clearCartBtn');
+
+  if (currentUserRole === 'manager') {
+    badge.innerHTML = '<i class="fa-solid fa-crown text-amber-400 text-xs"></i> <span>بەڕێوبەر (وەستا سەلام)</span>';
+    reportsBtn.classList.remove('hidden');
+    managerArchiveBtn.classList.remove('hidden');
+    passwordsBtn.classList.remove('hidden');
+    if(adminMenuControls) adminMenuControls.classList.remove('hidden');
+    if(menuCategoriesSection) menuCategoriesSection.style.display = 'block';
+    if(menuSectionWrapper) menuSectionWrapper.style.display = 'flex';
+    if(kitchenPrintBtn) kitchenPrintBtn.style.display = 'none';
+    if(customerPrintBtn) customerPrintBtn.style.display = 'none';
+    if(cashierModalPrintAndClearBtn) cashierModalPrintAndClearBtn.classList.add('hidden');
+    if(cartViewPanel) cartViewPanel.style.display = 'none';
+    if(mobileCartBar) mobileCartBar.style.display = 'none';
+    if(cashierEmbeddedCartSection) cashierEmbeddedCartSection.classList.add('hidden');
+    if(moveTableBtn) moveTableBtn.classList.add('hidden');
+    if(clearCartBtn) clearCartBtn.style.display = 'none';
+  } else if (currentUserRole === 'cashier') {
+    badge.innerHTML = '<i class="fa-solid fa-cash-register text-amber-400 text-xs"></i> <span>کاشێر</span>';
+    reportsBtn.classList.add('hidden');
+    managerArchiveBtn.classList.add('hidden');
+    passwordsBtn.classList.add('hidden');
+    if(adminMenuControls) adminMenuControls.classList.add('hidden');
+    if(menuCategoriesSection) menuCategoriesSection.style.display = 'none';
+    if(menuSectionWrapper) menuSectionWrapper.style.display = 'none';
+    if(kitchenPrintBtn) kitchenPrintBtn.style.display = 'none';
+    if(customerPrintBtn) customerPrintBtn.style.display = 'flex';
+    if(cashierModalPrintAndClearBtn) cashierModalPrintAndClearBtn.classList.remove('hidden');
+    if(cartViewPanel) cartViewPanel.style.display = 'none';
+    if(mobileCartBar) mobileCartBar.style.display = 'none';
+    if(cashierEmbeddedCartSection) cashierEmbeddedCartSection.classList.remove('hidden');
+    if(moveTableBtn) moveTableBtn.classList.add('hidden');
+    if(clearCartBtn) clearCartBtn.style.display = 'flex';
+  } else if (currentUserRole === 'waiter') {
+    badge.innerHTML = '<i class="fa-solid fa-concierge-bell text-amber-400 text-xs"></i> <span>ناوساڵە</span>';
+    reportsBtn.classList.add('hidden');
+    managerArchiveBtn.classList.add('hidden');
+    passwordsBtn.classList.add('hidden');
+    if(adminMenuControls) adminMenuControls.classList.add('hidden');
+    if(menuCategoriesSection) menuCategoriesSection.style.display = 'block';
+    if(menuSectionWrapper) menuSectionWrapper.style.display = 'flex';
+    if(kitchenPrintBtn) kitchenPrintBtn.style.display = 'flex';
+    if(customerPrintBtn) customerPrintBtn.style.display = 'none';
+    if(cashierModalPrintAndClearBtn) cashierModalPrintAndClearBtn.classList.add('hidden');
+    if(cartViewPanel) cartViewPanel.style.display = 'flex';
+    if(mobileCartBar) mobileCartBar.style.display = 'flex';
+    if(cashierEmbeddedCartSection) cashierEmbeddedCartSection.classList.add('hidden');
+    if(moveTableBtn) moveTableBtn.classList.remove('hidden');
+    if(clearCartBtn) clearCartBtn.style.display = 'none';
+  }
+  renderTables();
+  renderCategories();
+  renderMenu();
+  renderCart();
+  renderCashierEmbeddedCart();
+}
+
+function openPasswordsModal() {
+  document.getElementById('passManagerInput').value = PASSWORDS.manager;
+  document.getElementById('passCashierInput').value = PASSWORDS.cashier;
+  document.getElementById('passWaiterInput').value = PASSWORDS.waiter;
+  document.getElementById('passwordsModal').classList.remove('hidden');
+}
+
+function closePasswordsModal() {
+  document.getElementById('passwordsModal').classList.add('hidden');
+}
+
+function promptSaveNewPasswords() {
+  showConfirmModal('ئایا دڵنیایت لە گۆڕینی پاسۆردەکانی سیستەم؟', () => { executeSaveNewPasswords(); }, 'دڵنیابوونەوە لە گۆڕینی پاسۆرد', 'fa-solid fa-key', 'bg-amber-500 hover:bg-amber-400 text-zinc-950', 'بەڵێ', 'نەخێر');
+}
+
+function executeSaveNewPasswords() {
+  const mPass = document.getElementById('passManagerInput').value.trim();
+  const cPass = document.getElementById('passCashierInput').value.trim();
+  const wPass = document.getElementById('passWaiterInput').value.trim();
+  if(!mPass || !cPass || !wPass) {
+    showToast('تکایە خانەکان بە ڤالا جێمەهێڵە!', 'error');
+    return;
+  }
+  PASSWORDS.manager = mPass;
+  PASSWORDS.cashier = cPass;
+  PASSWORDS.waiter = wPass;
+  saveDataToFirebase();
+  closePasswordsModal();
+  showToast('پاسۆردەکان بە سەرکەوتوویی نوێکرانەوە', 'success');
+}
+
+function openTableArchiveModal() {
+  const container = document.getElementById('tableArchiveListContainer');
+  if(!container) return;
+  container.innerHTML = '';
+  if (!tableArchive || tableArchive.length === 0) {
+    container.innerHTML = `<div class="text-center py-12 text-zinc-400 text-xs font-bold bg-zinc-950 rounded-2xl border border-zinc-900">هیچ مێزێکی داخراو لە ئەرشیفدا نییە</div>`;
+  } else {
+    tableArchive.slice().reverse().forEach((record) => {
+      let itemsHtml = '';
+      let recordTotal = 0;
+      record.items.forEach(it => {
+        const sum = it.price * it.qty;
+        recordTotal += sum;
+        itemsHtml += `
+          <div class="flex justify-between items-center text-xs py-1 border-b border-zinc-900 last:border-0">
+            <span class="text-zinc-200 font-bold">${it.name} ${it.option ? `(${it.option})` : ''} <span class="text-amber-400 text-[10px]">×${toKurdishDigits(it.qty)}</span></span>
+            <span class="text-amber-300 font-black">${formatMoney(sum)} دینار</span>
+          </div>`;
+      });
+      const card = document.createElement('div');
+      card.className = 'bg-zinc-900/80 border border-amber-500/30 rounded-2xl p-4 shadow-lg space-y-2.5';
+      card.innerHTML = `
+        <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+          <div class="flex items-center gap-2">
+            <span class="bg-amber-500 text-zinc-950 font-black px-2.5 py-0.5 rounded text-xs">مێزی ${toKurdishDigits(record.tableNum)}</span>
+            <span class="text-[10px] text-zinc-400 font-bold"><i class="fa-regular fa-clock text-amber-500"></i> ${record.timeStr || ''}</span>
+          </div>
+          <span class="text-amber-400 font-black text-xs bg-amber-500/10 px-3 py-1 rounded-xl border border-amber-500/30">کۆی گشتی: ${formatMoney(recordTotal)} دینار</span>
+        </div>
+        <div class="space-y-1 bg-black/50 p-2.5 rounded-xl border border-zinc-900">${itemsHtml}</div>`;
+      container.appendChild(card);
+    });
+  }
+  document.getElementById('tableArchiveModal').classList.remove('hidden');
+}
+
+function closeTableArchiveModal() {
+  document.getElementById('tableArchiveModal').classList.add('hidden');
+}
+
+function confirmClearArchive() {
+  showConfirmModal('دڵنیایت لە سڕینەوەی داتای هەموو مێزە داخراوەکان؟', () => {
+    tableArchive = [];
+    saveDataToFirebase();
+    openTableArchiveModal();
+    showToast('ئەرشیفی مێزەکان بە سەرکەوتوویی سڕایەوە', 'success');
+  }, 'دڵنیای بۆ سڕینەوە', 'fa-solid fa-trash-can', 'bg-red-600 hover:bg-red-500 text-white', 'بەڵێ', 'نەخێر');
+}
+
+function openReportsModal() {
+  document.getElementById('totalRevenueText').innerText = formatMoney(salesData.totalRevenue || 0) + ' دینار';
+  const listEl = document.getElementById('categorizedSalesStatsList');
+  listEl.innerHTML = '';
+  if(!salesData.foodCounts || Object.keys(salesData.foodCounts).length === 0) {
+    listEl.innerHTML = `<div class="text-zinc-400 text-center py-8 text-xs font-bold bg-zinc-950 rounded-xl border border-zinc-800">هێشتا هیچ فرۆشێک لە سیستەمدا تۆمار نەکراوە</div>`;
+  } else {
+    categories.forEach(cat => {
+      const itemsInCat = fullMenu.filter(m => m.cat === cat.id);
+      let catTotalCount = 0;
+      let catTotalPrice = 0;
+      let catItemsHTML = '';
+      itemsInCat.forEach(menuItem => {
+        const count = salesData.foodCounts[menuItem.name] || 0;
+        if(count > 0) {
+          const itemSum = count * menuItem.price;
+          catTotalCount += count;
+          catTotalPrice += itemSum;
+          catItemsHTML += `
+            <div class="bg-black/90 p-3 rounded-xl border border-amber-500/20 flex justify-between items-center text-xs shadow-sm">
+              <span class="text-zinc-100 font-bold">${menuItem.name}</span>
+              <div class="flex items-center gap-3">
+                <span class="text-amber-300 font-extrabold bg-amber-500/20 px-3 py-1 rounded-lg border border-amber-500/30">${toKurdishDigits(count)} دانە</span>
+                <span class="text-amber-400 font-black">${formatMoney(itemSum)} دینار</span>
+              </div>
+            </div>`;
+        }
+      });
+      if(catTotalCount > 0) {
+        listEl.innerHTML += `
+          <div class="bg-zinc-900/90 border border-amber-500/30 rounded-2xl p-3.5 space-y-3 shadow-md">
+            <div class="flex justify-between items-center pb-2.5 border-b border-zinc-800">
+              <span class="text-amber-300 font-black text-xs flex items-center gap-2">
+                <span class="text-lg bg-black/80 p-1.5 rounded-xl border border-amber-500/30 shadow-inner">${cat.emoji}</span> ${cat.name}
+              </span>
+              <span class="text-[11px] text-amber-400 font-black bg-amber-500/20 px-3 py-1 rounded-xl border border-amber-500/40">
+                کۆی بەش: ${formatMoney(catTotalPrice)} دینار (${toKurdishDigits(catTotalCount)} دانە)
+              </span>
+            </div>
+            <div class="space-y-2">${catItemsHTML}</div>
+          </div>`;
+      }
+    });
+    if(listEl.innerHTML === '') {
+      listEl.innerHTML = `<div class="text-zinc-400 text-center py-8 text-xs font-bold bg-zinc-950 rounded-xl border border-zinc-800">هێشتا هیچ فرۆشێک لە سیستەمدا تۆمار نەکراوە</div>`;
+    }
+  }
+  document.getElementById('reportsModal').classList.remove('hidden');
+}
+
+function closeReportsModal() {
+  document.getElementById('reportsModal').classList.add('hidden');
+}
+
+function resetSalesReports() {
+  showConfirmModal('دڵنیایت لە سڕینەوەی هەموو ئامار و ڕاپۆرتەکانی فرۆش؟', () => {
+    salesData = { totalRevenue: 0, foodCounts: {} };
+    saveDataToFirebase();
+    openReportsModal();
+    showToast('هەموو ڕاپۆرتەکان بە سەرکەوتوویی سڕرانەوە', 'success');
+  }, 'سڕینەوەی هەمووی ڕاپۆرتەکان', 'fa-solid fa-trash-can', 'bg-red-600 hover:bg-red-500 text-white', 'بەڵێ', 'نەخێر');
+}
+
+function toKurdishDigits(n) {
+  if (n === null || n === undefined) return '';
+  const map = {'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
+  return n.toString().replace(/\d/g, d => map[d]);
+}
+
+function formatMoney(amount) {
+  const formatted = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return toKurdishDigits(formatted);
+}
+
+function getTableOrderId(tableNum) {
+  if (!tableOrderIds[tableNum]) {
+    let globalSeq = parseInt(localStorage.getItem('pos_global_order_sequence')) || 0;
+    globalSeq += 1;
+    localStorage.setItem('pos_global_order_sequence', globalSeq);
+    tableOrderIds[tableNum] = String(globalSeq).padStart(4, '0');
+    saveDataToFirebase();
+  }
+  return tableOrderIds[tableNum];
+}
+
+function getFormattedDateTimeParts() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const dateStr = toKurdishDigits(`${year}/${month}/${day}`);
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const ampmKu = hours >= 12 ? 'ب.ن' : 'پ.ن';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  const timeStr = `${toKurdishDigits(hours)}:${toKurdishDigits(minutes)} ${ampmKu}`;
+  return { dateStr, timeStr };
+}
+
+function updateHeaderLiveDateTime() {
+  const { dateStr, timeStr } = getFormattedDateTimeParts();
+  const dateEl = document.getElementById('headerLiveDate');
+  const timeEl = document.getElementById('headerLiveTime');
+  if (dateEl) dateEl.innerText = dateStr;
+  if (timeEl) timeEl.innerText = timeStr;
+}
+
+function toggleMobileCart(show) {
+  const panel = document.getElementById('cartViewPanel');
+  if (show) {
+    panel.classList.remove('translate-y-full');
+    panel.classList.add('translate-y-0');
+  } else {
+    panel.classList.remove('translate-y-0');
+    panel.classList.add('translate-y-full');
+  }
+}
+
+function checkTableCartModified(tableNum) {
+  const currentCartStr = JSON.stringify(tableCartStore[tableNum] || []);
+  const lastPrintedStr = tableLastPrintedSnapshot[tableNum] || '[]';
+  return currentCartStr !== lastPrintedStr;
+}
+
+function renderTables() {
+  const container = document.getElementById('tablesContainer');
+  if(!container) return;
+  container.innerHTML = '';
+  for (let i = 1; i <= 14; i++) {
+    const isSelected = currentSelectedTable === i;
+    const cartArr = tableCartStore[i] || [];
+    const itemCount = cartArr.reduce((sum, item) => sum + item.qty, 0);
+    const hasItems = itemCount > 0;
+    const isModified = checkTableCartModified(i);
+    tablePrintStatus[i] = !isModified;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.onclick = () => selectTable(i);
+    let bgClass = 'bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 border border-zinc-800';
+    if (isSelected) {
+      bgClass = 'bg-amber-500 text-zinc-950 font-black ring-2 ring-amber-400 shadow-md scale-105 z-10';
+    } else if (hasItems) {
+      bgClass = 'bg-emerald-950/90 text-emerald-200 border border-emerald-500/60 font-extrabold shadow-sm';
+    }
+    btn.className = `py-2 px-1 rounded-xl text-center flex flex-col items-center justify-center transition-all relative ${bgClass}`;
+    let statusDot = '';
+    if (hasItems) {
+      if (isModified) {
+        statusDot = `<span class="absolute -top-1 -left-1 bg-yellow-500 text-zinc-950 text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-black border border-black shadow-lg pulse-yellow" title="دەستکاری کراوە">!</span>`;
+      }
+      statusDot += `<span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-black border border-black shadow-lg">${toKurdishDigits(itemCount)}</span>`;
+    }
+    btn.innerHTML = `
+      <span class="text-[9px] leading-tight opacity-90 font-bold">مێزی</span>
+      <span class="text-sm font-black leading-tight tracking-wide">${toKurdishDigits(i)}</span>
+      ${statusDot}
+    `;
+    container.appendChild(btn);
+  }
+  updateSyncBadgeUI();
+  renderCashierEmbeddedCart();
+}
+
+function updateSyncBadgeUI() {
+  const cartHeaderBadge = document.getElementById('cartHeaderSyncBadge');
+  const cartHeaderSyncText = document.getElementById('cartHeaderSyncText');
+  const cart = tableCartStore[currentSelectedTable];
+  if (!cart || cart.length === 0) {
+    if(cartHeaderBadge) cartHeaderBadge.classList.add('hidden');
+    return;
+  }
+  if(cartHeaderBadge) cartHeaderBadge.classList.remove('hidden');
+  const isModified = checkTableCartModified(currentSelectedTable);
+  if (cartHeaderBadge && cartHeaderSyncText) {
+    if (isModified) {
+      cartHeaderBadge.className = 'text-[10px] font-black px-2 py-0.5 rounded-lg bg-yellow-950 text-yellow-300 border border-yellow-800 flex items-center gap-1';
+      cartHeaderSyncText.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> نەنێردراوە';
+    } else {
+      cartHeaderBadge.className = 'text-[10px] font-black px-2 py-0.5 rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-800 flex items-center gap-1';
+      cartHeaderSyncText.innerHTML = '<i class="fa-solid fa-check-circle"></i> نێردراوە';
+    }
+  }
+}
+
+function selectTable(num) {
+  currentSelectedTable = num;
+  document.getElementById('activeTableTitle').innerText = toKurdishDigits(num);
+  document.getElementById('cartTableBadge').innerText = `مێزی ${toKurdishDigits(num)}`;
+  document.getElementById('cashierCartTableBadge').innerText = `مێزی ${toKurdishDigits(num)}`;
+  document.getElementById('cashierModalSubTitle').innerText = `مێزی ${toKurdishDigits(num)}`;
+  renderTables();
+  renderCart();
+  renderCashierEmbeddedCart();
+}
+
+function openCashierCartModal() {
+  renderCashierModalItems();
+  document.getElementById('cashierCartModal').classList.remove('hidden');
+}
+
+function closeCashierCartModal() {
+  document.getElementById('cashierCartModal').classList.add('hidden');
+}
+
+function getPrintedCartForTable(tableNum) {
+  const snapshotStr = tableLastPrintedSnapshot[tableNum];
+  if (!snapshotStr) return [];
+  try { return JSON.parse(snapshotStr); } catch (e) { return []; }
+}
+
+function renderCashierEmbeddedCart() {
+  const printedCart = getPrintedCartForTable(currentSelectedTable);
+  let totalItems = 0;
+  let totalPrice = 0;
+  printedCart.forEach(item => {
+    totalItems += item.qty;
+    totalPrice += (item.price * item.qty);
+  });
+  const totalItemsEl = document.getElementById('cashierCartTotalItems');
+  const totalPriceEl = document.getElementById('cashierCartTotalPrice');
+  if(totalItemsEl) totalItemsEl.innerText = toKurdishDigits(totalItems);
+  if(totalPriceEl) totalPriceEl.innerText = formatMoney(totalPrice) + ' دینار';
+}
+
+function renderCashierModalItems() {
+  const container = document.getElementById('cashierModalItemsContainer');
+  const printedCart = getPrintedCartForTable(currentSelectedTable);
+  if(!container) return;
+  container.innerHTML = '';
+  let totalPrice = 0;
+  if (!printedCart || printedCart.length === 0) {
+    container.innerHTML = `<div class="text-center py-10 text-zinc-500 text-xs font-bold">هیچ داواکارییەکی نێردراو بۆ چێشتخانە نییە لەم مێزەدا</div>`;
+    document.getElementById('cashierModalTotalPrice').innerText = formatMoney(0) + ' دینار';
+    return;
+  }
+  printedCart.forEach(item => {
+    const itemSum = item.price * item.qty;
+    totalPrice += itemSum;
+    const row = document.createElement('div');
+    row.className = 'py-2.5 flex items-center justify-between text-xs';
+    row.innerHTML = `
+      <div class="flex-1 pl-2">
+        <div class="font-black text-zinc-100 text-xs sm:text-sm">${item.name} ${item.option ? `<span class="bg-zinc-900 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-md text-[10px] font-black mr-1">(${item.option})</span>` : ''}</div>
+        <div class="text-[11px] text-zinc-400 font-bold mt-0.5">دانە: <strong class="text-amber-300">${toKurdishDigits(item.qty)}</strong> × نرخ: <strong class="text-zinc-200">${formatMoney(item.price)}</strong></div>
+        ${item.note ? `<div class="text-[10px] text-amber-400 font-extrabold mt-1 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/25 inline-block">تێبینی: ${item.note}</div>` : ''}
+      </div>
+      <div class="text-amber-400 font-black text-xs sm:text-sm bg-amber-500/10 px-2.5 py-1.5 rounded-xl border border-amber-500/25">${formatMoney(itemSum)} دینار</div>
+    `;
+    container.appendChild(row);
+  });
+  document.getElementById('cashierModalTotalPrice').innerText = formatMoney(totalPrice) + ' دینار';
+}
+
+function openAddFoodModal() {
+  if(currentUserRole !== 'manager') {
+    showToast('تەنها بەڕێوبەر دەتوانێت خواردن زیاد بکات', 'error');
+    return;
+  }
+  document.getElementById('newFoodNameInput').value = '';
+  document.getElementById('newFoodPriceInput').value = '';
+  document.getElementById('newFoodHasOptionsCheck').checked = false;
+  const select = document.getElementById('newFoodCategorySelect');
+  select.innerHTML = '';
+  categories.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.innerText = `${c.emoji} ${c.name}`;
+    if (c.id === currentSelectedCat) opt.selected = true;
+    select.appendChild(opt);
+  });
+  onAddFoodCategoryChange();
+  const modal = document.getElementById('addFoodModal');
+  const box = document.getElementById('addFoodModalBox');
+  modal.classList.remove('hidden');
+  box.classList.add('action-pop');
+  setTimeout(() => box.classList.remove('action-pop'), 900);
+}
+
+function onAddFoodCategoryChange() {
+  const select = document.getElementById('newFoodCategorySelect');
+  const wrapper = document.getElementById('newFoodOptionsWrapper');
+  if (select.value === 'pizza') {
+    wrapper.classList.remove('hidden');
+  } else {
+    wrapper.classList.add('hidden');
+    document.getElementById('newFoodHasOptionsCheck').checked = false;
+  }
+}
+
+function closeAddFoodModal() {
+  document.getElementById('addFoodModal').classList.add('hidden');
+}
+
+function addNewFoodToMenu() {
+  const name = document.getElementById('newFoodNameInput').value.trim();
+  const price = parseInt(document.getElementById('newFoodPriceInput').value);
+  const categoryId = document.getElementById('newFoodCategorySelect').value;
+  const hasOptions = categoryId === 'pizza' ? document.getElementById('newFoodHasOptionsCheck').checked : false;
+  if (!name || isNaN(price) || price <= 0) {
+    showToast('تکایە ناونیشان و نرخی خواردن بە دروستی بنووسە', 'error');
+    return;
+  }
+  showConfirmModal(`ئایا دڵنیایت لە زیادکردنی خواردنی (${name}) بۆ مینو؟`, () => {
+    const newFood = { id: 'food_' + Date.now(), cat: categoryId, name: name, price: price, hasOptions: hasOptions };
+    fullMenu.push(newFood);
+    currentSelectedCat = categoryId;
+    renderCategories();
+    renderMenu();
+    closeAddFoodModal();
+    saveDataToFirebase();
+    showToast(`${name} سەرکەوتووانە زیادکرا`, 'success');
+  }, 'تۆمارکردنی خواردنی نوێ', 'fa-solid fa-plus-circle', 'bg-amber-500 hover:bg-amber-400 text-zinc-950', 'بەڵێ', 'نەخێر');
+}
+
+function openEditFoodModal() {
+  if(currentUserRole !== 'manager') {
+    showToast('تەنها بەڕێوبەر دەتوانێت دەستکاری بکات', 'error');
+    return;
+  }
+  modalSelectedCat = currentSelectedCat;
+  renderModalCategoryTabs();
+  renderModalCategoryItems();
+  const modal = document.getElementById('editFoodModal');
+  const box = document.getElementById('editFoodModalBox');
+  modal.classList.remove('hidden');
+  box.classList.add('action-pop');
+  setTimeout(() => box.classList.remove('action-pop'), 900);
+}
+
+function closeEditFoodModal() {
+  document.getElementById('editFoodModal').classList.add('hidden');
+}
+
+function renderModalCategoryTabs() {
+  const container = document.getElementById('modalCategoryTabsContainer');
+  if(!container) return;
+  container.innerHTML = '';
+  categories.forEach(cat => {
+    const isActive = modalSelectedCat === cat.id;
+    const btn = document.createElement('button');
+    btn.onclick = () => {
+      modalSelectedCat = cat.id;
+      renderModalCategoryTabs();
+      renderModalCategoryItems();
+    };
+    btn.className = `btn-press p-1.5 rounded-xl text-center flex flex-col items-center justify-center transition-all ${
+      isActive ? 'bg-amber-500 text-zinc-950 font-black ring-2 ring-amber-400 shadow-md scale-105 z-10' : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold border border-zinc-800'
+    }`;
+    btn.innerHTML = `<span class="text-base mb-0.5">${cat.emoji}</span><span class="text-[9px] font-black leading-tight">${cat.name}</span>`;
+    container.appendChild(btn);
+  });
+}
+
+function renderModalCategoryItems() {
+  const container = document.getElementById('modalCategoryItemsList');
+  if(!container) return;
+  container.innerHTML = '';
+  const itemsInCat = fullMenu.filter(item => item.cat === modalSelectedCat);
+  if (itemsInCat.length === 0) {
+    container.innerHTML = `<div class="text-center py-6 text-zinc-500 text-xs font-bold">هیچ خواردنێک لەم بەشەدا نییە</div>`;
+    return;
+  }
+  itemsInCat.forEach((item) => {
+    const realIndex = fullMenu.findIndex(i => i.id === item.id);
+    const row = document.createElement('div');
+    row.className = 'cart-item-anim bg-black border border-zinc-900 p-2 rounded-xl flex items-center justify-between gap-2 text-xs shadow-sm w-full';
+    row.innerHTML = `
+      <input type="text" id="mName_${realIndex}" value="${item.name}" class="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-white text-xs font-bold focus:outline-none focus:border-amber-500 flex-1 min-w-[120px]">
+      <input type="number" id="mPrice_${realIndex}" value="${item.price}" class="bg-zinc-900 border border-zinc-800 rounded-xl px-2.5 py-2 text-amber-300 text-xs font-bold focus:outline-none focus:border-amber-500 w-20 flex-none text-center">
+      <button onclick="promptUpdateModalItem(${realIndex})" class="btn-press bg-amber-500 hover:bg-amber-400 text-zinc-950 px-3 py-2 rounded-xl text-xs font-black shadow flex items-center gap-1 flex-none" title="نوێکردنەوە">
+        <i class="fa-solid fa-check"></i> <span class="hidden sm:inline">نوێکردنەوە</span>
+      </button>
+      <button onclick="promptDeleteModalItem(${realIndex})" class="btn-press bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 px-3 py-2 rounded-xl text-xs font-black shadow flex items-center gap-1 flex-none" title="سڕینەوە">
+        <i class="fa-solid fa-trash"></i> <span class="hidden sm:inline">سڕینەوە</span>
+      </button>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function promptUpdateModalItem(index) {
+  const nameInput = document.getElementById(`mName_${index}`);
+  const priceInput = document.getElementById(`mPrice_${index}`);
+  const newName = nameInput.value.trim();
+  const newPrice = parseInt(priceInput.value);
+  if (!newName || isNaN(newPrice) || newPrice <= 0) {
+    showToast('تکایە زانیارییەکان بە دروستی بنووسە', 'error');
+    return;
+  }
+  showConfirmModal(`ئایا دڵنیایت لە نوێکردنەوەی زانیارییەکانی (${fullMenu[index].name})؟`, () => {
+    fullMenu[index].name = newName;
+    fullMenu[index].price = newPrice;
+    renderMenu();
+    renderModalCategoryItems();
+    saveDataToFirebase();
+    showToast('گۆڕانکارییەکە پاشەکەوت کرا', 'success');
+  }, 'تۆمارکردنی گۆڕانکاری', 'fa-solid fa-check-to-slot', 'bg-amber-500 hover:bg-amber-400 text-zinc-950', 'بەڵێ', 'نەخێر');
+}
+
+function promptDeleteModalItem(index) {
+  const item = fullMenu[index];
+  showConfirmModal(`ئایا دڵنیایت لە سڕینەوەی خواردنی (${item.name})؟`, () => {
+    executeDeleteModalItem(index);
+  }, 'دڵنیایت لە سڕینەوە؟', 'fa-solid fa-triangle-exclamation', 'bg-red-600 hover:bg-red-500 text-white', 'بەڵێ', 'نەخێر');
+}
+
+function executeDeleteModalItem(index) {
+  const deletedName = fullMenu[index].name;
+  fullMenu.splice(index, 1);
+  renderMenu();
+  renderModalCategoryItems();
+  saveDataToFirebase();
+  showToast(`${deletedName} سڕایەوە`, 'info');
+}
+
+function showConfirmModal(msg, onConfirmCallback, title = 'دڵنیایت؟', iconClass = 'fa-solid fa-triangle-exclamation', yesBtnClass = 'bg-red-600 hover:bg-red-500 text-white', yesText = 'بەڵێ', noText = 'نەخێر') {
+  document.getElementById('confirmModalText').innerText = msg;
+  document.getElementById('confirmModalTitle').innerText = title;
+  const icon = document.getElementById('confirmModalIcon');
+  icon.className = iconClass;
+  const yesBtn = document.getElementById('confirmYesBtn');
+  yesBtn.className = `btn-press py-2 rounded-xl text-xs font-black shadow ${yesBtnClass}`;
+  yesBtn.innerText = yesText;
+  const noBtn = document.getElementById('confirmNoBtn');
+  if(noBtn) {
+    noBtn.style.display = 'block';
+    noBtn.innerText = noText;
+  }
+  const modal = document.getElementById('confirmModal');
+  modal.classList.remove('hidden');
+  yesBtn.onclick = () => {
+    closeConfirmModal();
+    onConfirmCallback();
+  };
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirmModal').classList.add('hidden');
+}
+
+function openMoveTableModal() {
+  if (currentUserRole !== 'waiter') {
+    showToast('تەنها ناوساڵە دەسەڵاتی گۆڕینی مێزی هەیە!', 'error');
+    return;
+  }
+  document.getElementById('modalSourceTableNum').innerText = toKurdishDigits(currentSelectedTable);
+  const grid = document.getElementById('modalTargetTablesGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  for (let i = 1; i <= 14; i++) {
+    const btn = document.createElement('button');
+    btn.onclick = () => confirmMoveTableAction(currentSelectedTable, i);
+    const isCurrent = i === currentSelectedTable;
+    const hasItems = (tableCartStore[i] || []).length > 0;
+    btn.className = `p-2 rounded-xl text-center flex flex-col items-center justify-center transition border ${
+      isCurrent ? 'bg-zinc-900 border-zinc-700 text-zinc-500 opacity-50 cursor-not-allowed' :
+      hasItems ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-200 font-bold hover:bg-emerald-900/60' :
+      'bg-zinc-900 border-zinc-800 text-zinc-200 font-bold hover:bg-zinc-800'
+    }`;
+    btn.disabled = isCurrent;
+    btn.innerHTML = `<span class="text-[9px] opacity-80 font-bold">مێزی</span><span class="text-sm font-black">${toKurdishDigits(i)}</span>`;
+    grid.appendChild(btn);
+  }
+  document.getElementById('moveTableModal').classList.remove('hidden');
+}
+
+function closeMoveTableModal() {
+  document.getElementById('moveTableModal').classList.add('hidden');
+}
+
+function confirmMoveTableAction(source, target) {
+  closeMoveTableModal();
+  if (!tableCartStore[source] || tableCartStore[source].length === 0) {
+    showToast('ئەم مێزە هیچ داواکارییەکی تێدا نییە!', 'error');
+    return;
+  }
+  showConfirmModal(`دڵنیایت لە گواستنەوەی داواکارییەکانی مێزی ${toKurdishDigits(source)} بۆ مێزی ${toKurdishDigits(target)}؟`, () => {
+    executeMoveTable(source, target);
+  }, 'گواستنەوەی مێز', 'fa-solid fa-right-left', 'bg-amber-500 hover:bg-amber-400 text-zinc-950', 'بەڵێ', 'نەخێر');
+}
+
+function executeMoveTable(source, target) {
+  tableCartStore[target] = (tableCartStore[target] || []).concat(tableCartStore[source]);
+  tableCartStore[source] = [];
+  tableLastPrintedSnapshot[target] = JSON.stringify(tableCartStore[target]);
+  tableLastPrintedSnapshot[source] = '[]';
+  if (tableOrderIds[source]) {
+    tableOrderIds[target] = tableOrderIds[source];
+    tableOrderIds[source] = null;
+  }
+  selectTable(target);
+  saveDataToFirebase();
+  showToast(`داواکارییەکان گوازراوە بۆ مێزی ${toKurdishDigits(target)}`, 'success');
+}
+
+function renderCategories() {
+  const container = document.getElementById('categoriesContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  categories.forEach(cat => {
+    const isActive = currentSelectedCat === cat.id;
+    const btn = document.createElement('button');
+    btn.onclick = () => {
+      currentSelectedCat = cat.id;
+      renderCategories();
+      renderMenu();
+    };
+    btn.className = `p-1.5 sm:p-2 rounded-2xl text-center flex flex-col items-center justify-center transition-all relative ${
+      isActive ? 'bg-amber-500 text-zinc-950 font-black ring-2 ring-amber-400 shadow-md scale-105 z-10' : 'bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 border border-zinc-800 font-bold'
+    }`;
+    btn.innerHTML = `<span class="text-base sm:text-lg leading-none mb-1">${cat.emoji}</span><span class="text-[10px] font-black leading-tight tracking-tight whitespace-nowrap overflow-hidden text-ellipsis w-full">${cat.name}</span>`;
+    container.appendChild(btn);
+  });
+}
+
+function renderMenu() {
+  const container = document.getElementById('menuItemsContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  const filtered = fullMenu.filter(item => item.cat === currentSelectedCat);
+  filtered.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'bg-zinc-900/90 border border-zinc-800/80 rounded-2xl p-2.5 shadow-sm transition-all flex flex-col justify-between text-center';
+    let actionArea = '';
+    if (currentUserRole === 'waiter') {
+      if (item.hasOptions) {
+        actionArea = `
+          <div class="mt-2 pt-1.5 border-t border-zinc-800 flex gap-1">
+            <button onclick="addItemToCartById('${item.id}', 'قیمە')" class="flex-1 bg-zinc-950 hover:bg-zinc-900 text-amber-200 border border-amber-500/30 rounded-xl py-1 text-[10px] font-black active:scale-95 transition flex items-center justify-center gap-1 shadow-sm">
+              <i class="fa-solid fa-plus text-[8px] text-amber-400"></i> قیمە
+            </button>
+            <button onclick="addItemToCartById('${item.id}', 'سنگ')" class="flex-1 bg-zinc-950 hover:bg-zinc-900 text-amber-200 border border-amber-500/30 rounded-xl py-1 text-[10px] font-black active:scale-95 transition flex items-center justify-center gap-1 shadow-sm">
+              <i class="fa-solid fa-plus text-[8px] text-amber-400"></i> سنگ
+            </button>
+          </div>
+        `;
+      } else {
+        actionArea = `
+          <button onclick="addItemToCartById('${item.id}', null)" class="mt-2 w-full bg-amber-500 hover:bg-amber-400 active:scale-95 text-zinc-950 rounded-xl text-[10px] font-black py-1.5 transition-all flex items-center justify-center gap-1 shadow-md">
+            <i class="fa-solid fa-plus text-[8px]"></i> <span>زیادکردن</span>
+          </button>
+        `;
+      }
+    }
+    card.innerHTML = `
+      <div>
+        <h3 class="font-extrabold text-zinc-100 text-xs leading-snug">${item.name}</h3>
+        <p class="text-amber-400 font-black text-xs mt-1 bg-black px-2 py-0.5 rounded-lg inline-block border border-zinc-900 shadow-inner">${formatMoney(item.price)} دینار</p>
+      </div>
+      ${actionArea}
+    `;
+    container.appendChild(card);
+  });
+}
+
+function addItemToCartById(itemId, option) {
+  if(currentUserRole !== 'waiter') {
+    showToast('تەنها ناوساڵە دەسەڵاتی زیادکردنی خواردنی هەیە!', 'error');
+    return;
+  }
+  const item = fullMenu.find(i => i.id === itemId);
+  if (!item) return;
+  if (!tableCartStore[currentSelectedTable]) tableCartStore[currentSelectedTable] = [];
+  const cart = tableCartStore[currentSelectedTable];
+  const existing = cart.find(i => i.id === item.id && i.option === option);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ id: item.id, name: item.name, price: item.price, qty: 1, option: option, note: '' });
+  }
+  renderTables();
+  renderCart();
+  saveDataToFirebase();
+  showToast(`${item.name} ${option ? '('+option+')' : ''} زیادکرا`, 'success');
+}
+
+function renderCart() {
+  const container = document.getElementById('cartItemsContainer');
+  const cart = tableCartStore[currentSelectedTable] || [];
+  if(container) container.innerHTML = '';
+  let totalPrice = 0;
+  let totalItems = 0;
+  if (cart) {
+    cart.forEach((item, index) => {
+      const itemSum = item.price * item.qty;
+      totalPrice += itemSum;
+      totalItems += item.qty;
+      let controls = (currentUserRole === 'waiter') ? `
+        <div class="flex items-center gap-1.5">
+          <button onclick="updateQty(${index}, -1)" class="w-7 h-7 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 rounded-lg font-black flex items-center justify-center active:scale-95 border border-zinc-800 shadow">
+            <i class="fa-solid fa-minus text-[10px]"></i>
+          </button>
+          <span class="font-black text-amber-300 min-w-[20px] text-center text-xs">${toKurdishDigits(item.qty)}</span>
+          <button onclick="updateQty(${index}, 1)" class="w-7 h-7 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 rounded-lg font-black flex items-center justify-center active:scale-95 border border-zinc-800 shadow">
+            <i class="fa-solid fa-plus text-[10px]"></i>
+          </button>
+          <button onclick="removeItem(${index})" class="w-7 h-7 text-red-400 hover:text-white hover:bg-red-950 rounded-lg flex items-center justify-center mr-1 transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>` : `<span class="font-black text-amber-400 text-xs bg-black px-2.5 py-1 rounded-lg border border-zinc-800 shadow-inner">دانە: ${toKurdishDigits(item.qty)}</span>`;
+
+      const row = document.createElement('div');
+      row.className = 'pt-2 pb-2 flex flex-col gap-1.5 text-xs bg-zinc-900/50 p-2.5 rounded-xl border border-zinc-800/90 shadow-sm';
+      row.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div class="flex-1 pl-2">
+            <div class="font-black text-zinc-100 text-xs">
+              ${item.name} ${item.option ? `<span class="bg-zinc-950 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded text-[10px] font-black mr-1">(${item.option})</span>` : ''}
+            </div>
+            <div class="text-amber-400 text-[11px] font-black mt-0.5 bg-black/60 px-2 py-0.5 rounded inline-block border border-zinc-900">${formatMoney(itemSum)} دینار</div>
+          </div>
+          ${controls}
+        </div>
+        <div class="w-full">
+          <input type="text" value="${item.note || ''}" ${currentUserRole !== 'waiter' ? 'disabled' : ''} oninput="updateItemNote(${index}, this.value)" placeholder="تێبینی..." class="w-full bg-black border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] text-zinc-200 focus:outline-none focus:border-amber-500 font-bold">
+        </div>
+      `;
+      if(container) container.appendChild(row);
+    });
+  }
+  if(document.getElementById('cartTotalItems')) document.getElementById('cartTotalItems').innerText = toKurdishDigits(totalItems);
+  if(document.getElementById('cartTotalPrice')) document.getElementById('cartTotalPrice').innerText = formatMoney(totalPrice) + ' دینار';
+  if(document.getElementById('mobileCartSummaryText')) document.getElementById('mobileCartSummaryText').innerText = `مێزی ${toKurdishDigits(currentSelectedTable)} (${toKurdishDigits(totalItems)} دانە)`;
+  if(document.getElementById('mobileCartSummaryPrice')) document.getElementById('mobileCartSummaryPrice').innerText = formatMoney(totalPrice) + ' دینار';
+  updateSyncBadgeUI();
+  renderCashierEmbeddedCart();
+}
+
+function updateQty(index, delta) {
+  if(currentUserRole !== 'waiter') return;
+  const cart = tableCartStore[currentSelectedTable];
+  if (!cart || !cart[index]) return;
+  cart[index].qty += delta;
+  if (cart[index].qty <= 0) cart.splice(index, 1);
+  renderTables();
+  renderCart();
+  saveDataToFirebase();
+}
+
+function updateItemNote(index, noteVal) {
+  if(currentUserRole !== 'waiter') return;
+  const cart = tableCartStore[currentSelectedTable];
+  if (cart && cart[index]) {
+    cart[index].note = noteVal;
+    renderTables();
+    saveDataToFirebase();
+  }
+}
+
+function removeItem(index) {
+  if(currentUserRole !== 'waiter') return;
+  const cart = tableCartStore[currentSelectedTable];
+  if (cart && cart[index]) {
+    cart.splice(index, 1);
+    renderTables();
+    renderCart();
+    saveDataToFirebase();
+  }
+}
+
+function archiveAndClearCurrentTable(printedCart) {
+  printedCart.forEach(item => {
+    salesData.totalRevenue = (salesData.totalRevenue || 0) + (item.price * item.qty);
+    if(!salesData.foodCounts) salesData.foodCounts = {};
+    salesData.foodCounts[item.name] = (salesData.foodCounts[item.name] || 0) + item.qty;
+  });
+  const now = new Date();
+  const timeStr = `${toKurdishDigits(now.getHours())}:${toKurdishDigits(String(now.getMinutes()).padStart(2, '0'))}`;
+  tableArchive.push({
+    tableNum: currentSelectedTable,
+    items: printedCart,
+    timeStr: timeStr,
+    timestamp: now.getTime()
+  });
+  tableCartStore[currentSelectedTable] = [];
+  tableLastPrintedSnapshot[currentSelectedTable] = '[]';
+  tablePrintStatus[currentSelectedTable] = true;
+  tableOrderIds[currentSelectedTable] = null;
+  renderTables();
+  renderCart();
+  renderCashierEmbeddedCart();
+  saveDataToFirebase();
+}
+
+function confirmClearCurrentCart() {
+  if (currentUserRole !== 'cashier') {
+    showToast('تەنها کاشێر دەسەڵاتی وەرگرتنی پارە و بەتاڵکردنەوەی مێزی هەیە!', 'error');
+    return;
+  }
+  const printedCart = getPrintedCartForTable(currentSelectedTable);
+  if (!printedCart || printedCart.length === 0) {
+    showToast('ئەم مێزە هیچ داواکارییەکی نێردراوی نییە!', 'info');
+    return;
+  }
+  showConfirmModal(`پارەم وەرگرتووە`, () => {
+    archiveAndClearCurrentTable(printedCart);
+    closeCashierCartModal();
+    showToast(`مێزی ${toKurdishDigits(currentSelectedTable)} پارەکەی وەرگیرا`, 'success');
+  }, 'وەرگرتنی پارەی مێز', 'fa-solid fa-check-to-slot', 'bg-emerald-600 hover:bg-emerald-500 text-white', 'بەڵێ', 'نەخێر');
+}
+
+async function cashierPrintAndClearTable() {
+  if (currentUserRole !== 'cashier') {
+    showToast('تەنها کاشێر دەتوانێت ئەم کارە بکات!', 'error');
+    return;
+  }
+  if (isSendingPrintJob) {
+    showToast('تکایە چاوەڕێ بکە، وەسڵەکە خەریکە دەنێردرێت...', 'info');
+    return;
+  }
+  const printedCart = getPrintedCartForTable(currentSelectedTable);
+  if (!printedCart || printedCart.length === 0) {
+    showToast('ئەم مێزە هیچ داواکارییەکی نێردراوی نییە!', 'info');
+    return;
+  }
+
+  isSendingPrintJob = true;
+  setTimeout(() => { isSendingPrintJob = false; }, 2200);
+
+  if (printLockTimer) clearTimeout(printLockTimer);
+  printLockTimer = setTimeout(() => { printLockTimer = null; }, 3000);
+
+  showToast('چاپکردنی وەسڵ و بەتاڵکردنەوەی مێز...', 'info');
+  const canvas = await generateReceiptCanvas('customer');
+  try {
+    const rasterBuffer = canvasToEscPosRaster(canvas);
+    await sendBufferToNetworkPrinter(rasterBuffer, 'customer');
+  } catch (err) {
+    console.error(err);
+    fallbackSystemPrint(canvas, 'customer');
+  }
+
+  archiveAndClearCurrentTable(printedCart);
+  closeCashierCartModal();
+  showToast(`وەسڵی مێزی ${toKurdishDigits(currentSelectedTable)} چاپ کرا و مێزەکە بەتاڵ کرایەوە!`, 'success');
+}
+
+async function generateReceiptCanvas(receiptType) {
+  const canvas = document.getElementById('thermalCanvas');
+  const ctx = canvas.getContext('2d');
+  const cart = (receiptType === 'customer') ? getPrintedCartForTable(currentSelectedTable) : (tableCartStore[currentSelectedTable] || []);
+  const isKitchen = receiptType === 'kitchen';
+  const width = 576;
+
+  let calcY = 48;
+  calcY += isKitchen ? 56 : 52;
+  calcY += 110;
+  calcY += 38;
+  calcY += 40;
+  calcY += 40;
+
+  cart.forEach(item => {
+    if (!isKitchen) calcY += 36;
+    if (isKitchen && item.note && item.note.trim() !== '') calcY += 34;
+    calcY += 32;
+    calcY += 38;
+  });
+
+  if (!isKitchen) {
+    calcY += 10;
+    calcY += 90;
+  } else {
+    calcY += 10;
+  }
+  calcY += 55;
+
+  canvas.width = width;
+  canvas.height = calcY;
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, width, calcY);
+  ctx.textAlign = 'center';
+
+  let y = 48;
+  if (isKitchen) {
+    ctx.fillStyle = '#333333';
+    ctx.font = '500 40px Vazirmatn, sans-serif';
+    ctx.fillText('وەسڵی چێشتخانە', width / 2, y);
+    y += 56;
+  } else {
+    ctx.fillStyle = '#333333';
+    ctx.font = '500 38px Vazirmatn, sans-serif';
+    ctx.fillText('خواردنگە و پیتزای شاهانە', width / 2, y);
+    y += 52;
+  }
+
+  ctx.fillStyle = '#222222';
+  ctx.fillRect(15, y, width - 30, 74);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '700 48px Vazirmatn, sans-serif';
+  ctx.fillText(`مێزی : ${toKurdishDigits(currentSelectedTable)}`, width / 2, y + 53);
+  y += 110;
+
+  ctx.fillStyle = '#333333';
+  const { dateStr, timeStr } = getFormattedDateTimeParts();
+  const orderId = getTableOrderId(currentSelectedTable);
+  ctx.font = '500 24px Vazirmatn, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(`کات: ${timeStr}`, width - 20, y);
+  ctx.textAlign = 'left';
+  ctx.fillText(`بەروار: ${dateStr}`, 20, y);
+  y += 38;
+  ctx.textAlign = 'right';
+  ctx.fillText(`داواکاری: ${toKurdishDigits(orderId)}`, width - 20, y);
+  y += 40;
+  drawDottedLine(ctx, y, width);
+  y += 40;
+
+  let grandTotal = 0;
+  cart.forEach((item) => {
+    const total = item.price * item.qty;
+    grandTotal += total;
+    const title = item.name + (item.option ? ` (${item.option})` : '');
+
+    ctx.fillStyle = '#222222';
+    ctx.font = '500 30px Vazirmatn, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(`${title}   x${toKurdishDigits(item.qty)}`, width - 20, y);
+
+    if (!isKitchen) {
+      y += 36;
+      ctx.fillStyle = '#333333';
+      ctx.textAlign = 'left';
+      ctx.font = '500 26px Vazirmatn, sans-serif';
+      ctx.fillText(formatMoney(total) + ' دینار', 20, y);
+    }
+
+    if (isKitchen && item.note && item.note.trim() !== '') {
+      y += 34;
+      ctx.font = '500 24px Vazirmatn, sans-serif';
+      ctx.fillStyle = '#444444';
+      ctx.textAlign = 'right';
+      ctx.fillText(`تێبینی: ${item.note}`, width - 35, y);
+    }
+
+    y += 32;
+    drawDottedLine(ctx, y, width);
+    y += 38;
+  });
+
+  if (!isKitchen) {
+    y += 10;
+    ctx.fillStyle = '#222222';
+    ctx.font = '600 34px Vazirmatn, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('کۆی گشتی:', width - 20, y);
+    ctx.textAlign = 'left';
+    ctx.fillText(formatMoney(grandTotal) + ' دینار', 20, y);
+    y += 90;
+  } else {
+    y += 10;
+  }
+
+  ctx.fillStyle = '#333333';
+  ctx.font = '500 26px Vazirmatn, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(isKitchen ? '--- کۆتایی داواکاری ---' : 'بەخێربێن', width / 2, y);
+  return canvas;
+}
+
+async function generateReportCanvas() {
+  const canvas = document.getElementById('thermalCanvas');
+  const ctx = canvas.getContext('2d');
+  const width = 576;
+
+  let calcY = 48 + 50 + 42 + 32 + 42 + 38 + 42;
+  categories.forEach(cat => {
+    const itemsInCat = fullMenu.filter(m => m.cat === cat.id);
+    const hasItems = itemsInCat.some(m => (salesData.foodCounts[m.name] || 0) > 0);
+    if (hasItems) {
+      calcY += 36;
+      itemsInCat.forEach(item => {
+        const count = salesData.foodCounts[item.name] || 0;
+        if (count > 0) calcY += 70;
+      });
+      calcY += 12;
+    }
+  });
+  calcY += 42 + 55;
+
+  canvas.width = width;
+  canvas.height = calcY;
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, width, calcY);
+  ctx.fillStyle = '#222222';
+  ctx.textAlign = 'center';
+
+  let y = 48;
+  ctx.font = '600 36px Vazirmatn, sans-serif';
+  ctx.fillText('خواردنگە و پیتزای شاهانە', width / 2, y);
+  y += 50;
+  ctx.fillStyle = '#333333';
+  ctx.font = '500 30px Vazirmatn, sans-serif';
+  ctx.fillText('ڕاپۆرتی فرۆشی ڕۆژانە', width / 2, y);
+  y += 42;
+
+  const { dateStr, timeStr } = getFormattedDateTimeParts();
+  ctx.font = '500 23px Vazirmatn, sans-serif';
+  ctx.fillText(`${dateStr} - ${timeStr}`, width / 2, y);
+  y += 32;
+  drawDottedLine(ctx, y, width);
+  y += 42;
+
+  ctx.fillStyle = '#222222';
+  ctx.font = '600 32px Vazirmatn, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('کۆی گشتی داهات:', width - 20, y);
+  ctx.textAlign = 'left';
+  ctx.fillText(formatMoney(salesData.totalRevenue || 0) + ' دینار', 20, y);
+  y += 38;
+  drawDottedLine(ctx, y, width);
+  y += 42;
+
+  categories.forEach(cat => {
+    const itemsInCat = fullMenu.filter(m => m.cat === cat.id);
+    const hasItems = itemsInCat.some(m => (salesData.foodCounts[m.name] || 0) > 0);
+    if (hasItems) {
+      ctx.textAlign = 'right';
+      ctx.font = '600 27px Vazirmatn, sans-serif';
+      ctx.fillStyle = '#333333';
+      ctx.fillText(`[ ${cat.name} ]`, width - 20, y);
+      y += 36;
+      itemsInCat.forEach(item => {
+        const count = salesData.foodCounts[item.name] || 0;
+        if (count > 0) {
+          ctx.fillStyle = '#222222';
+          ctx.font = '500 25px Vazirmatn, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText(`${item.name} (x${toKurdishDigits(count)})`, width - 25, y);
+          y += 32;
+
+          ctx.fillStyle = '#333333';
+          ctx.font = '500 21px Vazirmatn, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(formatMoney(count * item.price) + ' دینار', 20, y);
+          y += 38;
+        }
+      });
+      y += 12;
+    }
+  });
+
+  drawDottedLine(ctx, y, width);
+  y += 42;
+  ctx.fillStyle = '#333333';
+  ctx.textAlign = 'center';
+  ctx.font = '500 23px Vazirmatn, sans-serif';
+  ctx.fillText('--- کۆتایی ڕاپۆرت ---', width / 2, y);
+  return canvas;
+}
+
+function drawDottedLine(ctx, y, width) {
+  ctx.beginPath();
+  ctx.setLineDash([8, 8]);
+  ctx.strokeStyle = '#444444';
+  ctx.lineWidth = 1.5;
+  ctx.moveTo(12, y);
+  ctx.lineTo(width - 12, y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function canvasToEscPosRaster(canvas) {
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const imgData = ctx.getImageData(0, 0, width, height);
+  const data = imgData.data;
+  const widthBytes = Math.ceil(width / 8);
+  const rasterData = new Uint8Array(widthBytes * height);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const idx = (y * width + x) * 4;
+      const avg = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
+      if (avg < 160) {
+        const byteIdx = y * widthBytes + Math.floor(x / 8);
+        const bitIdx = 7 - (x % 8);
+        rasterData[byteIdx] |= (1 << bitIdx);
+      }
+    }
+  }
+  const xL = widthBytes & 0xFF;
+  const xH = (widthBytes >> 8) & 0xFF;
+  const yL = height & 0xFF;
+  const yH = (height >> 8) & 0xFF;
+  const header = new Uint8Array([0x1B, 0x40, 0x1D, 0x76, 0x30, 0x00, xL, xH, yL, yH]);
+  const footer = new Uint8Array([0x1B, 0x42, 0x01, 0x02, 0x1B, 0x64, 0x04, 0x1D, 0x56, 0x42, 0x00]);
+  const full = new Uint8Array(header.length + rasterData.length + footer.length);
+  full.set(header, 0);
+  full.set(rasterData, header.length);
+  full.set(footer, header.length + rasterData.length);
+  return full;
+}
+
+async function sendBufferToNetworkPrinter(buffer, printType = 'kitchen') {
+  try {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const base64Data = window.btoa(binary);
+    await db.collection("pos_data").doc("print_job").set({
+      data: base64Data,
+      jobId: Date.now(),
+      type: printType
+    });
+    return true;
+  } catch (err) {
+    console.error("هەڵە لە ناردنی پرێنت:", err);
+    throw err;
+  }
+}
+
+async function handlePrint(receiptType) {
+  if (currentUserRole === 'manager') {
+    showToast('بمبورە! بەڕێوبەر دەسەڵاتی پرێنتکردنی نییە.', 'error');
+    return;
+  }
+  if (isSendingPrintJob) {
+    showToast('تکایە چاوەڕێ بکە، وەسڵەکە خەریکە دەنێردرێت...', 'info');
+    return;
+  }
+  const targetCart = (receiptType === 'customer') ? getPrintedCartForTable(currentSelectedTable) : (tableCartStore[currentSelectedTable] || []);
+  if (!targetCart || targetCart.length === 0) {
+    showToast('هیچ داواکارییەک نییە بۆ پرێنتکردن!', 'error');
+    return;
+  }
+
+  isSendingPrintJob = true;
+  setTimeout(() => { isSendingPrintJob = false; }, 2200);
+
+  if (printLockTimer) clearTimeout(printLockTimer);
+  printLockTimer = setTimeout(() => { printLockTimer = null; }, 3000);
+
+  if (receiptType === 'kitchen') {
+    tableLastPrintedSnapshot[currentSelectedTable] = JSON.stringify(tableCartStore[currentSelectedTable] || []);
+    tablePrintStatus[currentSelectedTable] = true;
+    renderTables();
+    renderCart();
+    renderCashierEmbeddedCart();
+    saveDataToFirebase();
+  }
+
+  showToast('ناردنی وەسڵ بۆ پرێنتەر...', 'info');
+  const canvas = await generateReceiptCanvas(receiptType);
+  try {
+    const rasterBuffer = canvasToEscPosRaster(canvas);
+    await sendBufferToNetworkPrinter(rasterBuffer, receiptType);
+    showToast('وەسڵەکە بە سەرکەوتوویی لە پرێنتەر دەرچوو!', 'success');
+  } catch (err) {
+    console.error(err);
+    fallbackSystemPrint(canvas, receiptType);
+  }
+}
+
+async function printReport() {
+  if (isSendingPrintJob) {
+    showToast('تکایە چاوەڕێ بکە...', 'info');
+    return;
+  }
+  isSendingPrintJob = true;
+  setTimeout(() => { isSendingPrintJob = false; }, 2200);
+
+  showToast('ئامادەکردنی ڕاپۆرت بۆ پرێنتەر...', 'info');
+  const canvas = await generateReportCanvas();
+  try {
+    const rasterBuffer = canvasToEscPosRaster(canvas);
+    await sendBufferToNetworkPrinter(rasterBuffer, 'report');
+    showToast('ڕاپۆرتەکە نێردرا بۆ پرێنتەر!', 'success');
+  } catch(e) {
+    fallbackSystemPrint(canvas, 'report');
+  }
+}
+
+function fallbackSystemPrint(canvas, receiptType) {
+  const imgDataUrl = canvas.toDataURL('image/png');
+  const printableImg = document.getElementById('printableImage');
+  printableImg.src = imgDataUrl;
+  setTimeout(() => { window.print(); }, 300);
+}
+
+function showToast(msg, type = 'info') {
+  const toast = document.getElementById('toast');
+  const messageEl = document.getElementById('toastMessage');
+  const iconEl = document.getElementById('toastIcon');
+  messageEl.innerText = msg;
+  if (type === 'success') iconEl.className = 'fa-solid fa-circle-check text-emerald-400 text-sm';
+  else if (type === 'error') iconEl.className = 'fa-solid fa-circle-xmark text-red-400 text-sm';
+  else iconEl.className = 'fa-solid fa-circle-info text-amber-400 text-sm';
+  toast.classList.remove('translate-y-20', 'opacity-0');
+  toast.classList.add('translate-y-0', 'opacity-100');
+  setTimeout(() => {
+    toast.classList.remove('translate-y-0', 'opacity-100');
+    toast.classList.add('translate-y-20', 'opacity-0');
+  }, 3000);
+}
+
+window.onload = function () {
+  const passwordInputEl = document.getElementById('loginPasswordInput');
+  if (passwordInputEl) {
+    passwordInputEl.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') handleLogin();
+    });
+  }
+
+  const savedRole = localStorage.getItem('shahan_current_role');
+  if (savedRole) {
+    currentUserRole = savedRole;
+    document.getElementById('loginScreen').classList.add('hidden');
+    applyRolePermissions();
+  } else {
+    document.getElementById('loginScreen').classList.remove('hidden');
+    const mobileCartBar = document.getElementById('mobileCartBar');
+    if(mobileCartBar) mobileCartBar.classList.add('hidden');
+    selectLoginRole('manager');
+  }
+
+  db.collection("pos_data").doc("shahan_store").get().then((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.tableCartStore) tableCartStore = data.tableCartStore;
+      if (data.tableLastPrintedSnapshot) tableLastPrintedSnapshot = data.tableLastPrintedSnapshot;
+      if (data.tableOrderIds) tableOrderIds = data.tableOrderIds;
+      if (data.salesData) salesData = data.salesData;
+      if (data.tableArchive) tableArchive = data.tableArchive;
+      if (data.passwords) PASSWORDS = data.passwords;
+      if (data.menu && Array.isArray(data.menu) && data.menu.length > 0) fullMenu = data.menu;
+    }
+    initRealtimeSync();
+    renderTables();
+    renderCategories();
+    renderMenu();
+    renderCart();
+    renderCashierEmbeddedCart();
+  }).catch((error) => {
+    console.error("هەڵە لە خوێندنەوەی سەرەتایی:", error);
+    initRealtimeSync();
+    renderTables();
+    renderCategories();
+    renderMenu();
+    renderCart();
+    renderCashierEmbeddedCart();
+  });
+
+  updateHeaderLiveDateTime();
+  setInterval(updateHeaderLiveDateTime, 1000);
+};
+</script>
+</body>
+</html>
