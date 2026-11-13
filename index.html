@@ -239,7 +239,7 @@ input, textarea { user-select: text; -webkit-user-select: text; }
 
     <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-3 space-y-2 bg-zinc-950/60 pb-6 lg:pb-4"></div>
 
-    <div class="p-3.5 bg-black/95 border-t border-amber-500/20 space-y-2.5 flex-none shadow-[0_-10px_20px_rgba(0,0,0,0.8)] backdrop-blur-md">
+    <div class="p-3.5 pb-4 bg-black/95 border-t border-amber-500/20 space-y-2.5 flex-none shadow-[0_-10px_20px_rgba(0,0,0,0.8)] backdrop-blur-md">
       <div class="flex justify-between items-center text-zinc-300 text-xs font-extrabold bg-zinc-900/80 px-3 py-2 rounded-xl border border-amber-500/20">
         <span>کۆی گشتی ژمارەی خواردنەکان:</span>
         <span id="cartTotalItems" class="text-amber-300 font-black text-xs bg-black px-2 py-0.5 rounded border border-amber-500/25">٠</span>
@@ -248,11 +248,11 @@ input, textarea { user-select: text; -webkit-user-select: text; }
         <span class="text-xs text-amber-200 font-black">کۆی گشتی پارە:</span>
         <span id="cartTotalPrice" class="text-amber-400 text-base font-black drop-shadow">٠ دینار</span>
       </div>
-      <div class="flex items-center justify-end gap-2 pt-0.5">
-        <button id="kitchenPrintBtn" onclick="handlePrint('kitchen')" class="btn-press w-1/2 bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 px-2.5 rounded-xl text-xs font-black shadow-md flex items-center justify-center gap-1.5 border border-amber-500/35 hover:border-amber-400/60">
+      <div dir="ltr" style="display: flex; flex-direction: row; justify-content: flex-start; align-items: center; width: 100%;" class="gap-2 pt-0.5">
+        <button id="kitchenPrintBtn" dir="rtl" onclick="handlePrint('kitchen')" style="width: 48%;" class="btn-press bg-zinc-900 hover:bg-zinc-800 text-white py-2.5 px-2.5 rounded-xl text-xs font-black shadow-md flex items-center justify-center gap-1.5 border border-amber-500/35 hover:border-amber-400/60">
           <i class="fa-solid fa-kitchen-set text-amber-400 text-sm"></i> <span>وەسڵی چێشتخانە</span>
         </button>
-        <button id="customerPrintBtn" onclick="handlePrint('customer')" class="btn-press w-1/2 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-2.5 rounded-xl text-xs font-black shadow-lg flex items-center justify-center gap-1.5 border border-emerald-400/70">
+        <button id="customerPrintBtn" dir="rtl" onclick="handlePrint('customer')" style="width: 48%;" class="btn-press bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-2.5 rounded-xl text-xs font-black shadow-lg flex items-center justify-center gap-1.5 border border-emerald-400/70">
           <i class="fa-solid fa-file-invoice-dollar text-emerald-100 text-sm"></i> <span>وەسڵی موشتەری</span>
         </button>
       </div>
