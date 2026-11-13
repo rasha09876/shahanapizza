@@ -21,16 +21,17 @@ tailwind.config = {
 }
 </script>
 <style>
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; touch-action: manipulation; }
 *::-webkit-scrollbar { display: none; }
-html, body { height: 100vh; height: 100dvh; width: 100vw; margin: 0; padding: 0; overflow: hidden; font-family: 'Vazirmatn', sans-serif; user-select: none; -webkit-user-select: none; background-color: #16181d; perspective: 1800px; }
+html, body { height: 100vh; height: 100dvh; width: 100vw; margin: 0; padding: 0; overflow: hidden; font-family: 'Vazirmatn', sans-serif; user-select: none; -webkit-user-select: none; background-color: #16181d; }
+input, textarea { user-select: text; -webkit-user-select: text; }
 @media (min-width: 768px) { html { font-size: 110%; } }
 .modal-scrollable { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: #d97706 #18181b; }
 .modal-scrollable::-webkit-scrollbar { display: block !important; width: 5px; }
 .modal-scrollable::-webkit-scrollbar-track { background: #18181b; border-radius: 4px; }
 .modal-scrollable::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
-.btn-press { transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s ease, box-shadow 0.3s ease; transform-style: preserve-3d; cursor: pointer; }
-.btn-press:active { transform: scale(0.95) translateZ(-10px) !important; filter: brightness(1.25) !important; }
+.btn-press { transition: transform 0.12s ease, background-color 0.2s ease, box-shadow 0.2s ease; cursor: pointer; touch-action: manipulation; }
+.btn-press:active { transform: scale(0.96) !important; filter: brightness(1.15) !important; }
 .vip-login-box { background: linear-gradient(145deg, rgba(18, 18, 24, 0.95) 0%, rgba(6, 6, 9, 0.98) 100%); border: 2px solid rgba(245, 158, 11, 0.4); box-shadow: 0 60px 120px -25px rgba(0, 0, 0, 0.98), 0 0 60px rgba(245, 158, 11, 0.15); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); }
 .clean-logo-container { position: relative; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%); border-radius: 1.5rem; padding: 4px; border: 1px solid rgba(245, 158, 11, 0.15); }
 .cart-item-anim { animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -208,15 +209,15 @@ html, body { height: 100vh; height: 100dvh; width: 100vw; margin: 0; padding: 0;
       <div class="grid grid-cols-4 sm:grid-cols-8 gap-1 max-w-5xl mx-auto px-0.5" id="categoriesContainer"></div>
     </div>
 
-    <div id="menuSectionWrapper" class="flex-1 p-2 bg-[#16181d] overflow-hidden flex flex-col pb-16 lg:pb-2">
+    <div id="menuSectionWrapper" class="flex-1 p-2 bg-[#16181d] overflow-hidden flex flex-col pb-20 lg:pb-2">
       <div id="menuItemsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 w-full h-full content-start overflow-y-auto"></div>
     </div>
   </div>
 
-  <div id="cartViewPanel" class="w-full lg:w-[380px] xl:w-[420px] bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 flex flex-col h-full shadow-[0_0_30px_rgba(217,119,6,0.15)] z-40 flex-none border-t lg:border-t-0 lg:border-r-2 border-amber-500/30 absolute lg:relative inset-0 transform translate-y-full lg:translate-y-0 transition-transform duration-300">
+  <div id="cartViewPanel" class="w-full lg:w-[380px] xl:w-[420px] bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 flex flex-col h-full shadow-[0_0_30px_rgba(217,119,6,0.15)] z-40 flex-none border-t lg:border-t-0 lg:border-r-2 border-amber-500/30 absolute lg:relative inset-0 transform translate-y-full pointer-events-none lg:translate-y-0 lg:pointer-events-auto transition-transform duration-200">
     <div class="p-3 bg-black/90 text-white flex items-center justify-between flex-none shadow-lg border-b border-zinc-800 backdrop-blur-md">
       <div class="flex items-center gap-2 flex-wrap">
-        <button onclick="toggleMobileCart(false)" class="lg:hidden text-amber-400 text-xs px-2 py-1 flex items-center gap-1 font-bold btn-press bg-zinc-900 rounded-lg">
+        <button type="button" onclick="toggleMobileCart(false)" class="lg:hidden text-amber-400 text-xs px-2.5 py-1.5 flex items-center gap-1 font-bold btn-press bg-zinc-900 rounded-lg">
           <i class="fa-solid fa-arrow-right"></i> گەڕانەوە
         </button>
         <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
@@ -236,9 +237,9 @@ html, body { height: 100vh; height: 100dvh; width: 100vw; margin: 0; padding: 0;
       </button>
     </div>
 
-    <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-3 space-y-2 divide-y divide-zinc-900/80 bg-zinc-950/60 pb-36 lg:pb-4"></div>
+    <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-3 space-y-2 divide-y divide-zinc-900/80 bg-zinc-950/60 pb-6 lg:pb-4"></div>
 
-    <div class="p-3.5 bg-black/95 border-t border-zinc-800 space-y-2.5 flex-none shadow-[0_-10px_20px_rgba(0,0,0,0.8)] mb-16 lg:mb-0 backdrop-blur-md">
+    <div class="p-3.5 bg-black/95 border-t border-zinc-800 space-y-2.5 flex-none shadow-[0_-10px_20px_rgba(0,0,0,0.8)] backdrop-blur-md">
       <div class="flex justify-between items-center text-zinc-300 text-xs font-extrabold bg-zinc-900/80 px-3 py-2 rounded-xl border border-zinc-800">
         <span>کۆی گشتی ژمارەی خواردنەکان:</span>
         <span id="cartTotalItems" class="text-amber-300 font-black text-xs bg-black px-2 py-0.5 rounded border border-zinc-800">٠</span>
@@ -259,15 +260,15 @@ html, body { height: 100vh; height: 100dvh; width: 100vw; margin: 0; padding: 0;
   </div>
 </div>
 
-<div id="mobileCartBar" onclick="toggleMobileCart(true)" class="lg:hidden fixed bottom-2 left-2 bg-zinc-950 text-white py-2 px-3.5 rounded-2xl shadow-2xl z-50 border border-zinc-800 flex items-center gap-3 cursor-pointer btn-press max-w-[75%] hidden">
-  <div class="w-8 h-8 bg-amber-500 text-zinc-950 font-black rounded-xl flex items-center justify-center text-xs shadow-md flex-none">
+<button type="button" id="mobileCartBar" onclick="toggleMobileCart(true)" class="lg:hidden fixed bottom-3 left-3 bg-zinc-950 text-white py-2.5 px-4 rounded-2xl shadow-2xl z-[60] border border-amber-500/40 flex items-center gap-3 cursor-pointer btn-press max-w-[78%] hidden text-right">
+  <div class="w-9 h-9 bg-amber-500 text-zinc-950 font-black rounded-xl flex items-center justify-center text-sm shadow-md flex-none pointer-events-none">
     <i class="fa-solid fa-cart-shopping"></i>
   </div>
-  <div class="flex flex-col text-right min-w-0">
+  <div class="flex flex-col text-right min-w-0 pointer-events-none">
     <div class="text-[11px] font-black text-amber-300 truncate leading-tight" id="mobileCartSummaryText">مێزی ١ - چۆڵە</div>
     <div class="text-[11px] font-black text-amber-400 truncate leading-tight mt-0.5" id="mobileCartSummaryPrice">٠ دینار</div>
   </div>
-</div>
+</button>
 
 <div id="reportsModal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 hidden flex items-center justify-center p-3 sm:p-5">
   <div class="bg-gradient-to-b from-zinc-950 via-zinc-900 to-black border-2 border-amber-500/50 rounded-3xl w-full max-w-3xl p-5 sm:p-7 shadow-[0_0_80px_rgba(217,119,6,0.3)] flex flex-col max-h-[88vh] relative overflow-hidden">
@@ -583,6 +584,8 @@ for (let i = 1; i <= 14; i++) {
 let isSyncingFromServer = false;
 let printLockTimer = null;
 let isSendingPrintJob = false;
+let isEditingNote = false;
+let noteSaveTimer = null;
 
 function saveDataToFirebase() {
   if (isSyncingFromServer) return;
@@ -602,10 +605,21 @@ function saveDataToFirebase() {
 function initRealtimeSync() {
   db.collection("pos_data").doc("shahan_store").onSnapshot((doc) => {
     if (printLockTimer) return;
+    if (doc.metadata && doc.metadata.hasPendingWrites) return;
+    const activeEl = document.activeElement;
+    const isTypingInCart = isEditingNote || (activeEl && activeEl.tagName === 'INPUT' && activeEl.closest && activeEl.closest('#cartItemsContainer'));
     if (doc.exists) {
       isSyncingFromServer = true;
       const data = doc.data();
-      if (data.tableCartStore) tableCartStore = data.tableCartStore;
+      if (data.tableCartStore) {
+        if (isTypingInCart) {
+          const currentLocalCart = tableCartStore[currentSelectedTable];
+          tableCartStore = data.tableCartStore;
+          tableCartStore[currentSelectedTable] = currentLocalCart;
+        } else {
+          tableCartStore = data.tableCartStore;
+        }
+      }
       if (data.tableLastPrintedSnapshot) tableLastPrintedSnapshot = data.tableLastPrintedSnapshot;
       if (data.tableOrderIds) tableOrderIds = data.tableOrderIds;
       if (data.salesData) salesData = data.salesData;
@@ -613,7 +627,7 @@ function initRealtimeSync() {
       if (data.passwords) PASSWORDS = data.passwords;
       if (data.menu && Array.isArray(data.menu) && data.menu.length > 0) fullMenu = data.menu;
       renderTables();
-      renderCart();
+      if (!isTypingInCart) renderCart();
       renderCashierEmbeddedCart();
       renderMenu();
       setTimeout(() => { isSyncingFromServer = false; }, 300);
@@ -694,7 +708,7 @@ function applyRolePermissions() {
     if(customerPrintBtn) customerPrintBtn.style.display = 'none';
     if(cashierModalPrintAndClearBtn) cashierModalPrintAndClearBtn.classList.add('hidden');
     if(cartViewPanel) cartViewPanel.style.display = 'none';
-    if(mobileCartBar) mobileCartBar.style.display = 'none';
+    if(mobileCartBar) mobileCartBar.classList.add('hidden');
     if(cashierEmbeddedCartSection) cashierEmbeddedCartSection.classList.add('hidden');
     if(moveTableBtn) moveTableBtn.classList.add('hidden');
     if(clearCartBtn) clearCartBtn.style.display = 'none';
@@ -710,7 +724,7 @@ function applyRolePermissions() {
     if(customerPrintBtn) customerPrintBtn.style.display = 'flex';
     if(cashierModalPrintAndClearBtn) cashierModalPrintAndClearBtn.classList.remove('hidden');
     if(cartViewPanel) cartViewPanel.style.display = 'none';
-    if(mobileCartBar) mobileCartBar.style.display = 'none';
+    if(mobileCartBar) mobileCartBar.classList.add('hidden');
     if(cashierEmbeddedCartSection) cashierEmbeddedCartSection.classList.remove('hidden');
     if(moveTableBtn) moveTableBtn.classList.add('hidden');
     if(clearCartBtn) clearCartBtn.style.display = 'flex';
@@ -726,7 +740,7 @@ function applyRolePermissions() {
     if(customerPrintBtn) customerPrintBtn.style.display = 'none';
     if(cashierModalPrintAndClearBtn) cashierModalPrintAndClearBtn.classList.add('hidden');
     if(cartViewPanel) cartViewPanel.style.display = 'flex';
-    if(mobileCartBar) mobileCartBar.style.display = 'flex';
+    if(mobileCartBar) mobileCartBar.classList.remove('hidden');
     if(cashierEmbeddedCartSection) cashierEmbeddedCartSection.classList.add('hidden');
     if(moveTableBtn) moveTableBtn.classList.remove('hidden');
     if(clearCartBtn) clearCartBtn.style.display = 'none';
@@ -928,12 +942,15 @@ function updateHeaderLiveDateTime() {
 
 function toggleMobileCart(show) {
   const panel = document.getElementById('cartViewPanel');
+  const mobileCartBar = document.getElementById('mobileCartBar');
   if (show) {
-    panel.classList.remove('translate-y-full');
-    panel.classList.add('translate-y-0');
+    panel.classList.remove('translate-y-full', 'pointer-events-none');
+    panel.classList.add('translate-y-0', 'pointer-events-auto');
+    if (mobileCartBar) mobileCartBar.classList.add('hidden');
   } else {
-    panel.classList.remove('translate-y-0');
-    panel.classList.add('translate-y-full');
+    panel.classList.remove('translate-y-0', 'pointer-events-auto');
+    panel.classList.add('translate-y-full', 'pointer-events-none');
+    if (mobileCartBar && currentUserRole === 'waiter') mobileCartBar.classList.remove('hidden');
   }
 }
 
@@ -1420,6 +1437,7 @@ function renderCart() {
           </button>
         </div>` : `<span class="font-black text-amber-400 text-xs bg-black px-2.5 py-1 rounded-lg border border-zinc-800 shadow-inner">دانە: ${toKurdishDigits(item.qty)}</span>`;
 
+      const safeNote = (item.note || '').replace(/"/g, '&quot;');
       const row = document.createElement('div');
       row.className = 'pt-2 pb-2 flex flex-col gap-1.5 text-xs bg-zinc-900/50 p-2.5 rounded-xl border border-zinc-800/90 shadow-sm';
       row.innerHTML = `
@@ -1433,7 +1451,7 @@ function renderCart() {
           ${controls}
         </div>
         <div class="w-full">
-          <input type="text" value="${item.note || ''}" ${currentUserRole !== 'waiter' ? 'disabled' : ''} oninput="updateItemNote(${index}, this.value)" placeholder="تێبینی..." class="w-full bg-black border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] text-zinc-200 focus:outline-none focus:border-amber-500 font-bold">
+          <input type="text" value="${safeNote}" ${currentUserRole !== 'waiter' ? 'disabled' : ''} onfocus="isEditingNote = true" onblur="finishNoteEdit()" oninput="updateItemNote(${index}, this.value)" placeholder="تێبینی..." class="w-full bg-black border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] text-zinc-200 focus:outline-none focus:border-amber-500 font-bold">
         </div>
       `;
       if(container) container.appendChild(row);
@@ -1464,8 +1482,20 @@ function updateItemNote(index, noteVal) {
   if (cart && cart[index]) {
     cart[index].note = noteVal;
     renderTables();
-    saveDataToFirebase();
+    if (noteSaveTimer) clearTimeout(noteSaveTimer);
+    noteSaveTimer = setTimeout(() => {
+      saveDataToFirebase();
+    }, 800);
   }
+}
+
+function finishNoteEdit() {
+  isEditingNote = false;
+  if (noteSaveTimer) {
+    clearTimeout(noteSaveTimer);
+    noteSaveTimer = null;
+  }
+  saveDataToFirebase();
 }
 
 function removeItem(index) {
@@ -1842,6 +1872,11 @@ async function handlePrint(receiptType) {
   if (isSendingPrintJob) {
     showToast('تکایە چاوەڕێ بکە، وەسڵەکە خەریکە دەنێردرێت...', 'info');
     return;
+  }
+  isEditingNote = false;
+  if (noteSaveTimer) {
+    clearTimeout(noteSaveTimer);
+    noteSaveTimer = null;
   }
   const targetCart = (receiptType === 'customer') ? getPrintedCartForTable(currentSelectedTable) : (tableCartStore[currentSelectedTable] || []);
   if (!targetCart || targetCart.length === 0) {
